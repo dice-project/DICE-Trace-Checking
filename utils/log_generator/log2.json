@@ -1,0 +1,18 @@
+{
+	"boltC" : 
+		[
+			"bolt",
+			{
+				"Thread-4" : "emit",
+				"Thread-6" : "emit"
+			}
+		],
+	"spoutA" : 
+		[
+			"spout",
+			{
+				"Thread-8" : "emit",
+				"Thread-10" : "emit"
+			}
+		]
+}

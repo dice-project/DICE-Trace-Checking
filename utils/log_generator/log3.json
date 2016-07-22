@@ -1,0 +1,23 @@
+{
+	"boltA" : 
+		[
+			"bolt",
+			{
+				"Thread-9" : "emit"
+			}
+		],
+	"boltB" : 
+		[
+			"bolt",
+			{
+				"Thread-11" : "emit"
+			}
+		],
+	"boltC" : 
+		[
+			"bolt",
+			{
+				"Thread-12" : "emit"
+			}
+		]
+}

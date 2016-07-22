@@ -1,0 +1,16 @@
+{
+	"boltA" : 
+		[
+			{
+				"Thread-1" : "emit",
+				"Thread-3" : "emit"
+			}
+		],
+	"boltB" : 
+		[
+			{
+				"Thread-2" : "emit",
+				"Thread-5" : "emit"
+			}
+		]
+}

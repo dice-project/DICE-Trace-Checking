@@ -1,0 +1,31 @@
+{
+	"topologyname": "ATopology",
+	"nodes": [
+		{
+			"name": "spoutA",
+			"type": "spout",
+			"parameter": "idleTime",
+			"timewindow": 3600,
+			"method": "",
+			"relation": "",
+			"min": 10,
+			"max": 1000
+		},
+		{
+			"name": "spoutB",
+			"type": "spout",
+			"parameter": "idleTime",
+			"timewindow": 3600,
+			"method": "",
+			"relation": "",
+			"min": 0,
+			"max": 2000
+		}
+	],
+	"formulae": [
+		{
+			"nodelist": "",
+			"property": ""
+		}
+	]
+}

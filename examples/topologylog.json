@@ -1,0 +1,25 @@
+{
+	"topologyname": "ATopology",
+	"logs": [
+		{
+			"nodename": "spoutA",
+			"logs": "w2.log"
+		},
+		{
+			"nodename": "spoutB",
+			"logs": "w1.log"
+		},
+		{
+			"nodename": "boltA",
+			"logs": "w1.log,w3.log"
+		},
+		{
+			"nodename": "boltB",
+			"logs": "w3.log"
+		},
+		{
+			"nodename": "boltC",
+			"logs": "w2.log,w3.log"
+		}		
+	]
+}

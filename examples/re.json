@@ -1,0 +1,7 @@
+{
+	"numberOfgroups": 12,
+	"valuePositions": [9,11],
+	"keyPositions": [1,2,3,4,5,6,7],
+	"nodePosition": 10,
+	"regexp": "(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2}):(\\d{2})\\.(\\d{3})\\+(\\d{4}) \\[(Thread-\\d+)-(.*)\\] .* \\[INFO\\] (emit|receive) (.*)"
+}
