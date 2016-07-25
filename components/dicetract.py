@@ -5,7 +5,7 @@ import os
 import logging
 import json
 import abc
-from merge3 import Merger
+from merge import Merger
 from formula import SigmaEQ, IdleTimeEQ
 from subprocess import call
 
@@ -145,7 +145,7 @@ class RunnableTCInstance():
 		print '| Formula file: ' + '/home/bersani/Tools/DICE-WP4/dicestractor/'+self.__formula.typename()+self.__nodename+'.sol'
 		print '| **************************************************** |\n'
 		
-		call (['/home/bersani/Tools/spark-1.6.2-bin-hadoop2.6/bin/spark-submit', '--class', 'it.polimi.krstic.MTLMapReduce.SparkHistoryCheck', '--master', 'spark://localhost:7077',  '--executor-memory', '4g', '--executor-cores', '2', '--num-executors', '1', '/home/bersani/Tools/mtlmapreduce/target/MTLMapReduce-0.0.1-SNAPSHOT-jar-with-dependencies.jar', '/home/bersani/Tools/DICE-WP4/dicestractor/merge/'+self.__nodename+'.his', '/home/bersani/Tools/DICE-WP4/dicestractor/'+self.__formula.typename()+self.__nodename+'.sol', self.__formula.typename()+self.__nodename+'.res', '--reader', 'spark', '-l'])
+		call (['./spark-submit', '--class', 'it.polimi.krstic.MTLMapReduce.SparkHistoryCheck', '--master', 'spark://localhost:7077',  '--executor-memory', '4g', '--executor-cores', '2', '--num-executors', '1', './MTLMapReduce-0.0.1-SNAPSHOT-jar-with-dependencies.jar', './merge/'+self.__nodename+'.his', self.__formula.typename()+self.__nodename+'.sol', self.__formula.typename()+self.__nodename+'.res', '--reader', 'spark', '-l'])
 
 
 
