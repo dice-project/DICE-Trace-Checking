@@ -145,7 +145,7 @@ class RunnableTCInstance():
 		print '| Formula file: ' + '/home/bersani/Tools/DICE-WP4/dicestractor/'+self.__formula.typename()+self.__nodename+'.sol'
 		print '| **************************************************** |\n'
 		
-		call (['./spark-submit', '--class', 'it.polimi.krstic.MTLMapReduce.SparkHistoryCheck', '--master', 'spark://localhost:7077',  '--executor-memory', '4g', '--executor-cores', '2', '--num-executors', '1', './MTLMapReduce-0.0.1-SNAPSHOT-jar-with-dependencies.jar', './merge/'+self.__nodename+'.his', self.__formula.typename()+self.__nodename+'.sol', self.__formula.typename()+self.__nodename+'.res', '--reader', 'spark', '-l'])
+		call (['./spark-submit', '--class', 'it.polimi.krstic.MTLMapReduce.SparkHistoryCheck', '--master', 'spark://localhost:7077',  '--executor-memory', '4g', '--executor-cores', '2', '--num-executors', '1', './MTLMapReduce.jar', './merge/'+self.__nodename+'.his', self.__formula.typename()+self.__nodename+'.sol', self.__formula.typename()+self.__nodename+'.res', '--reader', 'spark', '-l'])
 
 
 
