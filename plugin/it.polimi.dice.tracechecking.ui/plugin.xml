@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="it.polimi.dice.tracechecking.ui.launcher.TracecheckingLaunchConfigurationTabGroup"
+            id="it.polimi.dice.tracechecking.ui.launchConfigurationTabGroup"
+            type="it.polimi.dice.tracechecking.launchConfigurationType1">
+      </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabs">
+      <tab
+            class="it.polimi.dice.tracechecking.ui.launcher.MainLaunchConfigurationTab"
+            group="it.polimi.dice.tracechecking.ui.launchConfigurationTabGroup"
+            id="it.polimi.dice.tracechecking.ui.mainTab"
+            name="Main">
+      </tab>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="it.polimi.dice.tracechecking.launchConfigurationType1"
+            icon="icons/tc_icon.png"
+            id="it.polimi.dice.tracechecking.ui.launchConfigurationTypeImage">
+      </launchConfigurationTypeImage>
+   </extension>
+   <!--
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="it.polimi.dice.tracechecking.ui.toolbars.sampleToolbar">
+            <command
+                  commandId="it.polimi.dice.tracechecking.ui.commands.launchTraceCheckingCommand"
+                  icon="icons/verify_icon.png"
+                  id="it.polimi.dice.tracechecking.ui.toolbars.LaunchTraceCheckingCommand"
+                  tooltip="Launch tracechecking on current Papyrus Model">
+                  <visibleWhen>
+                       <with variable="activeEditorId">
+					       <equals value="org.eclipse.papyrus.infra.core.papyrusEditor"/>
+					    </with>
+                  </visibleWhen>
+            </command>
+         </toolbar>
+      </menuContribution>
+ -->
+<!--
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="it.polimi.dice.tracechecking.ui.handlers.LaunchTraceCheckingHandler"
+            commandId="it.polimi.dice.tracechecking.ui.commands.launchTraceCheckingCommand">
+      </handler>
+   </extension>
+ -->
+<!--
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            id="it.polimi.dice.tracechecking.ui.commands.tracecheckingCategory"
+            name="DICE TraceChecking">
+      </category>
+      <command
+            categoryId="it.polimi.dice.tracechecking.ui.commands.tracecheckingCategory"
+            description="Launches  DICE TraceChecking"
+            id="it.polimi.dice.tracechecking.ui.commands.launchTraceCheckingCommand"
+            name="Launch DICE TraceChecking">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="it.polimi.dice.tracechecking.ui.launcher.TraceCheckingLaunchShortcut"
+            icon="icons/verify_icon.png"
+            id="it.polimi.dice.tracechecking.ui.shortcut"
+            label="DICE &amp;TraceChecking"
+            modes="run">
+            <contextualLaunch>
+         <enablement>
+           <with variable="selection">
+             <count value="1"/>
+              <iterate>
+               <or>
+                  <adapt
+                        type="org.eclipse.papyrus.infra.onefile.model.IPapyrusElement">
+                  </adapt>
+                  <and>
+                     <adapt
+                           type="org.eclipse.core.resources.IFile">
+                     </adapt>
+                     <or>
+                        <test
+                              forcePluginActivation="true"
+                              property="org.eclipse.core.resources.extension"
+                              value="notation">
+                        </test>
+                        <test
+                              forcePluginActivation="true"
+                              property="org.eclipse.core.resources.extension"
+                              value="di">
+                        </test>
+                        <test
+                              forcePluginActivation="true"
+                              property="org.eclipse.core.resources.extension"
+                              value="uml">
+                        </test>
+                      </or>
+                  </and>
+               </or>
+              </iterate>
+             </with>
+         </enablement>
+ 		</contextualLaunch>
+       <configurationType
+              id="it.polimi.dice.tracechecking.launchConfigurationType1">
+       </configurationType>
+       <description
+              description="Launches a tracechecking task on the specified UML model"
+              mode="run">
+       </description>
+            
+      </shortcut>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipse.papyrus.infra.onefile.model.IPapyrusElement"
+            class="it.polimi.dice.tracechecking.adapters.LaunchableDummyAdapterFactory">
+         <adapter
+               type="org.eclipse.debug.ui.actions.ILaunchable">
+         </adapter>
+      </factory>
+      <factory
+            adaptableType="org.eclipse.papyrus.infra.onefile.model.IPapyrusElement"
+            class="it.polimi.dice.tracechecking.adapters.UmlModelAdapterFactory">
+         <adapter
+               type="org.eclipse.papyrus.uml.tools.model.UmlModel">
+         </adapter>
+      </factory>
+      <factory
+            adaptableType="org.eclipse.core.resources.IFile"
+            class="it.polimi.dice.tracechecking.adapters.UmlModelAdapterFactory">
+         <adapter
+               type="org.eclipse.papyrus.uml.tools.model.UmlModel">
+         </adapter>
+      </factory>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.dice.ui.preferences"
+            class="it.polimi.dice.tracechecking.ui.preferences.DiceTraceCheckingPreferencePage"
+            id="it.polimi.dice.tracechecking.ui.prefPage1"
+            name="TraceChecking Tools">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="it.polimi.dice.tracechecking.ui.preferences.DiceTraceCheckingPreferencesInitializer">
+      </initializer>
+   </extension>
+   -->
+</plugin>
