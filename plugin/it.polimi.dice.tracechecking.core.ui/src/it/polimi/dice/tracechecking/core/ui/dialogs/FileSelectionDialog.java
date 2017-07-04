@@ -1,4 +1,4 @@
-package it.polimi.dice.core.ui.dialogs;
+package it.polimi.dice.tracechecking.core.ui.dialogs;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFile;
@@ -16,7 +16,7 @@ import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
 
-import it.polimi.dice.core.ui.DiceCoreUiPlugin;
+import it.polimi.dice.tracechecking.core.ui.DiceCoreUiPlugin;
 
 
 

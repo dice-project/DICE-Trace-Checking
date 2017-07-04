@@ -1,4 +1,4 @@
-package it.polimi.dice.core.ui.dialogs;
+package it.polimi.dice.tracechecking.core.ui.dialogs;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;

@@ -3,10 +3,10 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Dice Core Plugin
 Bundle-SymbolicName: it.polimi.dice.tracechecking.core;singleton:=true
 Bundle-Version: 0.1.0.qualifier
-Bundle-Activator: it.polimi.dice.core.DiceCorePlugin
+Bundle-Activator: it.polimi.dice.tracechecking.core.DiceCorePlugin
 Require-Bundle: org.eclipse.core.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Export-Package: it.polimi.dice.core,
- it.polimi.dice.core.logger,
- it.polimi.dice.core.util
+Export-Package: it.polimi.dice.tracechecking.core,
+ it.polimi.dice.tracechecking.core.logger,
+ it.polimi.dice.tracechecking.core.util

@@ -1,4 +1,4 @@
-package it.polimi.dice.core.ui;
+package it.polimi.dice.tracechecking.core.ui;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;

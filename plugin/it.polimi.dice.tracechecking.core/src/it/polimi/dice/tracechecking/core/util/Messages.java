@@ -1,10 +1,10 @@
-package it.polimi.dice.core.logger;
+package it.polimi.dice.tracechecking.core.util;
 
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
-	private static final String BUNDLE_NAME = "it.polimi.dice.core.logger.messages"; //$NON-NLS-1$
-	public static String DiceLogger_unexpectedError;
+	private static final String BUNDLE_NAME = "it.polimi.dice.core.util.messages"; //$NON-NLS-1$
+	public static String StreamRedirector_unableToRedirectStreamError;
 
 	static {
 		// initialize resource bundle

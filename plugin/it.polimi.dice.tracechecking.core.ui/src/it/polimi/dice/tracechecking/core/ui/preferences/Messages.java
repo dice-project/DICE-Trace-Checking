@@ -1,4 +1,4 @@
-package it.polimi.dice.core.ui.preferences;
+package it.polimi.dice.tracechecking.core.ui.preferences;
 
 import org.eclipse.osgi.util.NLS;
 

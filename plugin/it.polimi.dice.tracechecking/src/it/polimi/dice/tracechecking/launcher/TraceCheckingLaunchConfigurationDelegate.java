@@ -1,7 +1,6 @@
 package it.polimi.dice.tracechecking.launcher;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +19,7 @@ import it.polimi.dice.tracechecking.config.TraceCheckingToolSerializer;
 import it.polimi.dice.tracechecking.httpclient.HttpClient;
 import it.polimi.dice.tracechecking.uml2json.json.TopologyNodeFormula;
 import it.polimi.dice.tracechecking.uml2json.json.TraceCheckingRequest;
+
 
 
 

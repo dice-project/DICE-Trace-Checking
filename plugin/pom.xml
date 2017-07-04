@@ -32,6 +32,9 @@
 		<module>it.polimi.dice.tracechecking.core</module>
 		<module>it.polimi.dice.tracechecking.core.ui</module>
 		<module>it.polimi.dice.tracechecking.update</module>
+		<module>it.polimi.dice.tracechecking.feature</module>
+		<module>it.polimi.dice.tracechecking.ui.feature</module>
+		<module>it.polimi.dice.tracechecking.uml2json.feature</module>
 <!--		<module>it.polimi.dice.tracechecking.feature</module>
 		<module>it.polimi.dice.update</module>
 		<module>it.polimi.dice.tracechecking.ui.feature</module>

@@ -1,4 +1,4 @@
-package it.polimi.dice.core;
+package it.polimi.dice.tracechecking.core;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

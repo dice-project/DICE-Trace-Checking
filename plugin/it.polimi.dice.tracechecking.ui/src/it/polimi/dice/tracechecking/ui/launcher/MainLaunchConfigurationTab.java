@@ -63,10 +63,10 @@ import org.eclipse.uml2.uml.UMLPackage;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import it.polimi.dice.core.logger.DiceLogger;
-import it.polimi.dice.core.ui.dialogs.FileSelectionDialog;
-import it.polimi.dice.core.ui.dialogs.Utils;
 import it.polimi.dice.tracechecking.config.TraceCheckingToolSerializer;
+import it.polimi.dice.tracechecking.core.logger.DiceLogger;
+import it.polimi.dice.tracechecking.core.ui.dialogs.FileSelectionDialog;
+import it.polimi.dice.tracechecking.core.ui.dialogs.Utils;
 import it.polimi.dice.tracechecking.launcher.TraceCheckingLaunchConfigurationAttributes;
 import it.polimi.dice.tracechecking.ui.TraceCheckingUI;
 import it.polimi.dice.tracechecking.ui.launcher.editingsupports.DesignValueEditingSupport;

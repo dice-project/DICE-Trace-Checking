@@ -17,8 +17,8 @@ Require-Bundle: org.eclipse.ui,
  com.google.gson,
  it.polimi.dice.tracechecking.core.ui,
  it.polimi.dice.tracechecking.core,
- it.polimi.dice.tracechecking.uml2json;bundle-version="0.1.0",
- it.polimi.dice.tracechecking;bundle-version="0.1.0"
+ it.polimi.dice.tracechecking.uml2json,
+ it.polimi.dice.tracechecking
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: it.polimi.dice.tracechecking.launcher

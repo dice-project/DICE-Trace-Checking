@@ -1,4 +1,4 @@
-package it.polimi.dice.core.logger;
+package it.polimi.dice.tracechecking.core.logger;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Plugin;

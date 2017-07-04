@@ -1,4 +1,4 @@
-package it.polimi.dice.core.ui.dialogs;
+package it.polimi.dice.tracechecking.core.ui.dialogs;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;

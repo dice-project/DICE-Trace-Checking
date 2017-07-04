@@ -1,4 +1,4 @@
-package it.polimi.dice.core.util;
+package it.polimi.dice.tracechecking.core.util;
 
 import java.io.IOException;
 import java.io.InputStream;

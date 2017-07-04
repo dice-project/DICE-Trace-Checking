@@ -1,19 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <bundle id="it.polimi.dice.tracechecking" version="0.1.0.qualifier">
+   <feature url="features/it.polimi.dice.tracechecking.feature_0.1.0.qualifier.jar" id="it.polimi.dice.tracechecking.feature" version="0.1.0.qualifier">
       <category name="it.polimi.dice.tracechecking"/>
-   </bundle>
-   <bundle id="it.polimi.dice.tracechecking.core" version="0.1.0.qualifier">
+   </feature>
+   <feature url="features/it.polimi.dice.tracechecking.ui.feature_0.1.0.qualifier.jar" id="it.polimi.dice.tracechecking.ui.feature" version="0.1.0.qualifier">
       <category name="it.polimi.dice.tracechecking"/>
-   </bundle>
-   <bundle id="it.polimi.dice.tracechecking.core.ui" version="0.1.0.qualifier">
+   </feature>
+   <feature url="features/it.polimi.dice.tracechecking.uml2json.feature_0.1.0.qualifier.jar" id="it.polimi.dice.tracechecking.uml2json.feature" version="0.1.0.qualifier">
       <category name="it.polimi.dice.tracechecking"/>
-   </bundle>
-   <bundle id="it.polimi.dice.tracechecking.ui" version="0.1.0.qualifier">
-      <category name="it.polimi.dice.tracechecking"/>
-   </bundle>
-   <bundle id="it.polimi.dice.tracechecking.uml2json" version="0.1.0.qualifier">
-      <category name="it.polimi.dice.tracechecking"/>
-   </bundle>
+   </feature>
    <category-def name="it.polimi.dice.tracechecking" label="DICE - Trace Checking"/>
 </site>
