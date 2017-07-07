@@ -8,7 +8,7 @@ import abc
 import re
 import math
 from merge import Merger
-from formula import SigmaEQ, IdleTimeEQ
+from formula import SigmaCountEQ, SigmaCountLT, SigmaCountGT, SigmaAverageEQ, SigmaAverageLT, SigmaAverageGT, SpoutRateCountEQ, SpoutRateCountLT, SpoutRateCountGT
 from subprocess import call, Popen, PIPE, check_output
 
 # abstract DMon query class
