@@ -1,0 +1,1 @@
+( (-U- $interval_e $subinterval_e $relation_e $value_e emit) & (-U- $interval_r $subinterval_r $relation_r $value_r receive) )

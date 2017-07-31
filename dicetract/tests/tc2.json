@@ -1,0 +1,30 @@
+{
+	"topologyname": "ATopology",
+	"nodes": [
+		{
+			"name": "boltA",
+			"type": "bolt",
+			"parameter": "sigma",
+			"timewindow": 3600,
+			"timesubwindow" : 60,
+			"method": "average",
+			"relation": "=",
+			"designvalue": 0.8
+		},
+		{
+			"name": "spoutB",
+			"type": "spout",
+			"parameter": "spoutrate",
+			"timewindow": 3600,
+			"method": "counting",
+			"relation": "<",
+			"designvalue": 1.0
+		}
+	],
+	"formulae": [
+		{
+			"nodelist": "",
+			"property": ""
+		}
+	]
+}

@@ -1,0 +1,61 @@
+{
+	"topologyname": "ATopology",
+	"nodes": [
+		{
+			"name": "spoutA",
+			"type": "spout",
+			"parameter": "idleTime",
+			"timewindow": 3600,
+			"inputrate": 100,
+			"method": "",
+			"relation": "",
+			"designvalue": 0.0
+		},
+		{
+			"name": "spoutB",
+			"type": "spout",
+			"parameter": "idleTime",
+			"timewindow": 3600,
+			"inputrate": 100,
+			"method": "",
+			"relation": "",
+			"designvalue": 0.0
+		},
+		{
+			"name": "boltA",
+			"type": "bolt",
+			"parameter": "sigma",
+			"timewindow": 3600,
+			"inputrate": 100,
+			"method": "counting",
+			"relation": "=",
+			"designvalue": 1.1
+		},
+		{
+			"name": "boltB",
+			"type": "bolt",
+			"parameter": "sigma",
+			"timewindow": 3600,
+			"inputrate": 100,
+			"method": "counting",
+			"relation": "=",
+			"designvalue": 1.3
+		},
+		{
+			"name": "boltC",
+			"type": "bolt",
+			"parameter": "sigma",
+			"timewindow": 3600,
+			"inputrate": 100,
+			"method": "counting",
+			"relation": "=",
+			"designvalue": 0.7
+		}
+	],
+	"formulae": [
+		{
+			"nodelist": "",
+			"property": ""
+		}
+	]
+}

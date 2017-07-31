@@ -1,0 +1,20 @@
+{
+	"topologyname": "ATopology",
+	"nodes": [
+		{
+			"name": "word",
+			"type": "spout",
+			"parameter": "spoutrate",
+			"timewindow": 3600,
+			"method": "counting",
+			"relation": "=",
+			"designvalue": "1.0"
+		}
+	],
+	"formulae": [
+		{
+			"nodelist": "",
+			"property": ""
+		}
+	]
+}

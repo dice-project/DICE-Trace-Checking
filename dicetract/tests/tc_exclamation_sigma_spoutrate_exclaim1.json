@@ -1,0 +1,30 @@
+{
+	"topologyname": "ATopology",
+	"nodes": [
+		{
+			"name": "exclaim1",
+			"type": "bolt",
+			"parameter": "sigma",
+			"timewindow": 3600,
+			"method": "counting",
+			"relation": "=",
+			"designvalue": "0.8"
+		},
+		{
+			"name": "word",
+			"type": "spout",
+			"parameter": "spoutrate",
+			"timewindow": 3600,
+			"timesubwindow": "36",
+			"method": "average",
+			"relation": "<",
+			"designvalue": "0.3"
+		}
+	],
+	"formulae": [
+		{
+			"nodelist": "",
+			"property": ""
+		}
+	]
+}

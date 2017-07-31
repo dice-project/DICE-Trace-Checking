@@ -1,0 +1,31 @@
+{
+	"topologyname": "ATopology",
+	"nodes": [
+		{
+			"name": "exclaim1",
+			"type": "bolt",
+			"parameter": "sigma",
+			"timewindow": 3600,
+			"timesubwindow": 36,
+			"method": "counting",
+			"relation": "=",
+			"designvalue": "0.8"
+		},
+		{
+			"name": "exclaim2",
+			"type": "bolt",
+			"parameter": "sigma",
+			"timewindow": 3600,
+			"timesubwindow": 36,
+			"method": "counting",
+			"relation": "=",
+			"designvalue": "0.8"
+		}
+	],
+	"formulae": [
+		{
+			"nodelist": "",
+			"property": ""
+		}
+	]
+}
