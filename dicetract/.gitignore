@@ -1,0 +1,12 @@
+*.pyc
+*.
+*.his
+*.sol
+*.eve
+*.sh
+*.log
+*.tar
+
+/results/
+/merge/
+/logs/
