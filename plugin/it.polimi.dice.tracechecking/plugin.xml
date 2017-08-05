@@ -5,7 +5,7 @@
 	         point="org.eclipse.debug.core.launchConfigurationTypes">
 	      <launchConfigurationType
 	            delegate="it.polimi.dice.tracechecking.launcher.TraceCheckingLaunchConfigurationDelegate"
-	            id="it.polimi.dice.tracechecking.launchConfigurationType1"
+	            id="it.polimi.dice.tracechecking.launchConfigurationTypeStorm"
 	            modes="run"
 	            name="DICE Trace-Checking">
 	      </launchConfigurationType>

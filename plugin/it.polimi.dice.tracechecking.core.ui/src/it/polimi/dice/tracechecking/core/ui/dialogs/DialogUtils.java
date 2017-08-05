@@ -5,18 +5,19 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
-public class Utils {
+public class DialogUtils {
 
-	public static void openExceptionDialog(Exception e, String additionalInfo) {
+	public static void getWarningDialog(Exception e, String text, String message) {
 		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				Shell activeShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 				MessageBox dialog = new MessageBox(activeShell, SWT.ICON_WARNING | SWT.OK);
-				dialog.setText(e.getMessage());
-				dialog.setMessage(e.getMessage() + "\n" + additionalInfo);
+				dialog.setText(text);
+				dialog.setMessage(message);
 
 				// open dialog and await user selection
 				dialog.open();
+
 			}
 		});
 	}

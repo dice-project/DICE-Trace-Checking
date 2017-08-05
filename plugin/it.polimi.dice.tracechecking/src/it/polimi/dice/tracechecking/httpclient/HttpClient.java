@@ -7,26 +7,33 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.browser.IWebBrowser;
+import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-
+import it.polimi.dice.tracechecking.TraceCheckingPlugin;
+import it.polimi.dice.tracechecking.core.logger.DiceLogger;
+import it.polimi.dice.tracechecking.core.ui.dialogs.DialogUtils;
 
 public class HttpClient {
 
 	private URL serverEndpoint;
 	private URL taskLocation;
-//	private VerificationTask taskStatus;
+	// private VerificationTask taskStatus;
 
-	public HttpClient(){
-		
+	public HttpClient() {
+
 	}
-	
+
 	public URL getServerEndpoint() {
 		return serverEndpoint;
 	}
@@ -43,14 +50,13 @@ public class HttpClient {
 		this.taskLocation = taskLocation;
 	}
 
-/*	public VerificationTask getTaskStatus() {
-		return taskStatus;
-	}
-*/
-/*	public void setTaskStatus(VerificationTask taskStatus) {
-		this.taskStatus = taskStatus;
-	}
-*/
+	/*
+	 * public VerificationTask getTaskStatus() { return taskStatus; }
+	 */
+	/*
+	 * public void setTaskStatus(VerificationTask taskStatus) { this.taskStatus
+	 * = taskStatus; }
+	 */
 	public boolean postJSONRequest(String urlString, String request) {
 
 		try {
@@ -66,26 +72,35 @@ public class HttpClient {
 			os.write(request.getBytes());
 			os.flush();
 			if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED
-					&& conn.getResponseCode() != HttpURLConnection.HTTP_ACCEPTED) {
+					&& conn.getResponseCode() != HttpURLConnection.HTTP_ACCEPTED
+					&& conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
 				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
 			}
 
-//			CHECK TC-SERVICE			
-//			String location = conn.getHeaderField("location");
-//			System.out.println("Location: \n" + location);
-//			this.setTaskLocation(new URL(location));
+			// CHECK TC-SERVICE
+			// String location = conn.getHeaderField("location");
+			// System.out.println("Location: \n" + location);
+			// this.setTaskLocation(new URL(location));
 
 			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
 
-			String output;
+			String outputLine;
+			String responseString = "";
 			System.out.println("Output from Server .... \n");
-			while ((output = br.readLine()) != null) {
-				System.out.println(output);
+			while ((outputLine = br.readLine()) != null) {
+				responseString += outputLine;
+				System.out.println(outputLine);
 			}
-
+			
+			//Gson gson = new GsonBuilder().create();
+			// this.setTaskStatus(gson.fromJson(responseString,
+			// VerificationTask.class));
+			
+			DialogUtils.getWarningDialog(null, "TraceCheckingOutput", responseString);
+			
 			conn.disconnect();
 
-
+			
 		} catch (MalformedURLException e) {
 
 			e.printStackTrace();
@@ -93,23 +108,23 @@ public class HttpClient {
 
 		} catch (IOException e) {
 
-
 			PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-			    public void run() {
-			        Shell activeShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-			        MessageBox dialog = new MessageBox(activeShell, SWT.ICON_WARNING | SWT.OK);
-	        		dialog.setText(e.getMessage());
-	        		dialog.setMessage(e.getMessage()+"!!\n Please verify that the url is reachable ("+ urlString +")");
+				public void run() {
+					Shell activeShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+					MessageBox dialog = new MessageBox(activeShell, SWT.ICON_WARNING | SWT.OK);
+					dialog.setText(e.getMessage());
+					dialog.setMessage(
+							e.getMessage() + "!!\n Please verify that the url is reachable (" + urlString + ")");
 
-	        		// open dialog and await user selection
-	        		dialog.open(); 
+					// open dialog and await user selection
+					dialog.open();
 
-			    }
+				}
 			});
-			
+
 			return false;
 		}
-		return true; 
+		return true;
 
 	}
 
@@ -135,14 +150,12 @@ public class HttpClient {
 				responseString += outputLine;
 				System.out.println(outputLine);
 			}
-			
-			
+
 			// getting task status from json response
-			Gson gson = new GsonBuilder().create();
-//			this.setTaskStatus(gson.fromJson(responseString, VerificationTask.class));
-						
-			
-			
+			//Gson gson = new GsonBuilder().create();
+			// this.setTaskStatus(gson.fromJson(responseString,
+			// VerificationTask.class));
+
 			conn.disconnect();
 
 		} catch (MalformedURLException e) {
@@ -153,11 +166,34 @@ public class HttpClient {
 
 			e.printStackTrace();
 
-		} catch (NullPointerException e){
+		} catch (NullPointerException e) {
 			e.printStackTrace();
-		};
+		}
+		;
 
 	}
+	
+	private static void openUrl(URL url, String browserId) {
+	    IWorkbenchBrowserSupport support = PlatformUI.getWorkbench().getBrowserSupport();
+	    IWebBrowser browser;
+	    try {
+	        browser = support.createBrowser(TraceCheckingPlugin.PLUGIN_ID + "_" + browserId);
+	        browser.openURL(url);
+	    } catch (PartInitException e) {
+	        DiceLogger.logException(TraceCheckingPlugin.getDefault(), e);
+	    }
+	}
+	 
+	
+	public static void openNewBrowserTab(URL url, String browserId){
+		Display.getDefault().syncExec(new Runnable() { 
+			@Override
+			public void run() { 
+					openUrl(url, browserId);
+				} 
+			}); 
+	}
+	
 
 	// http://localhost:8080/RESTfulExample/json/product/post
 	public static void main(String[] args) {
@@ -166,12 +202,12 @@ public class HttpClient {
 		HttpClient nc = new HttpClient();
 		nc.postJSONRequest(myUrl, jsonRequest);
 		try {
-		    Thread.sleep(5000);                 
-		} catch(InterruptedException ex) {
-		    Thread.currentThread().interrupt();
+			Thread.sleep(5000);
+		} catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
 		}
 		nc.getTaskStatusUpdatesFromServer();
-		
+
 	}
 
 }

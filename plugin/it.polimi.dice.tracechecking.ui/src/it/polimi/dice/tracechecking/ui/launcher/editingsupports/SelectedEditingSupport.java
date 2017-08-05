@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import it.polimi.dice.tracechecking.ui.TraceCheckingUI;
 import it.polimi.dice.tracechecking.ui.launcher.DirtableTab;
-import it.polimi.dice.tracechecking.ui.launcher.MainLaunchConfigurationTab;
+import it.polimi.dice.tracechecking.ui.launcher.TCStormMainLaunchConfigurationTab;
 import it.polimi.dice.tracechecking.ui.launcher.Messages;
 import it.polimi.dice.tracechecking.uml2json.json.TopologyNodeFormula;
 
@@ -23,7 +23,7 @@ public class SelectedEditingSupport extends EditingSupport {
 	private final Shell shell;
 	private final DirtableTab tab;
 
-	public SelectedEditingSupport(TableViewer viewer, Shell shell, MainLaunchConfigurationTab tab) {
+	public SelectedEditingSupport(TableViewer viewer, Shell shell, TCStormMainLaunchConfigurationTab tab) {
 		super(viewer);
 		this.viewer = viewer;
 		this.editor = new CheckboxCellEditor(viewer.getTable(), SWT.CHECK);

@@ -45,6 +45,14 @@ public class StormTopology {
 	public List<SpoutClass> getSpouts() {
 		return spouts;
 	}
+	
+	public List<String> getSpoutsNames(){
+		List<String> names = new ArrayList<>();
+		for (SpoutClass s : spouts) {
+			names.add(s.getName());
+		}
+		return names;
+	}
 
 	public void setSpouts(List<SpoutClass> spouts) {
 		this.spouts = spouts;
@@ -52,6 +60,14 @@ public class StormTopology {
 
 	public List<BoltClass> getBolts() {
 		return bolts;
+	}
+	
+	public List<String> getBoltsNames(){
+		List<String> names = new ArrayList<>();
+		for (BoltClass b : bolts) {
+			names.add(b.getName());
+		}
+		return names;
 	}
 
 	public void setBolts(List<BoltClass> bolts) {

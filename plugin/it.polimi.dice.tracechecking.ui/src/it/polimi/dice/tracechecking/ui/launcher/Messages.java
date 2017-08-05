@@ -4,6 +4,9 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "it.polimi.dice.tracechecking.ui.launcher.messages"; //$NON-NLS-1$
+	public static String TraceCheckingLaunchShortcut_missingProfileText;
+	public static String TraceCheckingLaunchShortcut_missingProfileMessage;
+	public static String MainLaunchConfigurationTab_monitoredSpoutsLabel;
 	public static String MainLaunchConfigurationTab_monitoredBoltsLabel;
 	public static String MainLaunchConfigurationTab_boltLabel;
 	public static String MainLaunchConfigurationTab_ae2bvzotLabel;

@@ -10,7 +10,15 @@ public interface TraceCheckingLaunchConfigurationAttributes {
 //		public static final String TOPOLOGY_NODES_FORMULAE = "it.polimi.dice.tracechecking.launcher.console.topologyNodesFormulae"; //"VERIFICATION_CONFIGURATION"; //$NON-NLS-1$
 		public static final String BOLTS_FORMULAE = "it.polimi.dice.tracechecking.launcher.console.boltsFormulae"; //$NON-NLS-1$
 		public static final String SPOUTS_FORMULAE = "it.polimi.dice.tracechecking.launcher.console.spoutsFormulae"; //$NON-NLS-1$
-		public static final String HOST_ADDRESS = "it.polimi.dice.tracechecking.launcher.console.hostAddress";
-		public static final String PORT_NUMBER = "it.polimi.dice.tracechecking.launcher.console.portNumber";
+		public static final String TC_HOST_ADDRESS = "it.polimi.dice.tracechecking.launcher.console.tcHostAddress";
+		public static final String TC_PORT_NUMBER = "it.polimi.dice.tracechecking.launcher.console.tcPortNumber";
+		public static final String MONITORING_HOST_ADDRESS = "it.polimi.dice.tracechecking.launcher.console.monitoringHostAddress";
+		public static final String MONITORING_PORT_NUMBER = "it.polimi.dice.tracechecking.launcher.console.monitoringPortNumber";
+		
+		public static final String DEFAULT_TC_HOST_ADDRESS = "http://localhost";
+		public static final String DEFAULT_TC_PORT_NUMBER = "5050";
+		public static final String DEFAULT_MONITORING_HOST_ADDRESS = "http://109.231.122.169";
+		public static final String DEFAULT_MONITORING_PORT_NUMBER = "5001";
+
 	 
 	} 

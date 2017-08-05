@@ -20,7 +20,35 @@
          id="it.polimi.dice.tracechecking"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="0.1.0.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="it.polimi.dice.tracechecking.core"
+         download-size="0"
+         install-size="0"
+         version="0.1.0.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="it.polimi.dice.tracechecking.core.ui"
+         download-size="0"
+         install-size="0"
+         version="0.1.0.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="it.polimi.dice.tracechecking.ui"
+         download-size="0"
+         install-size="0"
+         version="0.1.0.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="it.polimi.dice.tracechecking.uml2json"
+         download-size="0"
+         install-size="0"
+         version="0.1.0.qualifier"
          unpack="false"/>
 
 </feature>

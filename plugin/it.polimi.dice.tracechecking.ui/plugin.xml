@@ -6,13 +6,13 @@
       <launchConfigurationTabGroup
             class="it.polimi.dice.tracechecking.ui.launcher.TracecheckingLaunchConfigurationTabGroup"
             id="it.polimi.dice.tracechecking.ui.launchConfigurationTabGroup"
-            type="it.polimi.dice.tracechecking.launchConfigurationType1">
+            type="it.polimi.dice.tracechecking.launchConfigurationTypeStorm">
       </launchConfigurationTabGroup>
    </extension>
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTabs">
       <tab
-            class="it.polimi.dice.tracechecking.ui.launcher.MainLaunchConfigurationTab"
+            class="it.polimi.dice.tracechecking.ui.launcher.TCStormMainLaunchConfigurationTab"
             group="it.polimi.dice.tracechecking.ui.launchConfigurationTabGroup"
             id="it.polimi.dice.tracechecking.ui.mainTab"
             name="Main">
@@ -21,7 +21,7 @@
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
       <launchConfigurationTypeImage
-            configTypeID="it.polimi.dice.tracechecking.launchConfigurationType1"
+            configTypeID="it.polimi.dice.tracechecking.launchConfigurationTypeStorm"
             icon="icons/tc_icon.png"
             id="it.polimi.dice.tracechecking.ui.launchConfigurationTypeImage">
       </launchConfigurationTypeImage>
@@ -35,7 +35,7 @@
                id="it.polimi.dice.tracechecking.ui.toolbars.sampleToolbar">
             <command
                   commandId="it.polimi.dice.tracechecking.ui.commands.launchTraceCheckingCommand"
-                  icon="icons/verify_icon.png"
+                  icon="icons/tc_icon.png"
                   id="it.polimi.dice.tracechecking.ui.toolbars.LaunchTraceCheckingCommand"
                   tooltip="Launch tracechecking on current Papyrus Model">
                   <visibleWhen>
@@ -56,8 +56,7 @@
             commandId="it.polimi.dice.tracechecking.ui.commands.launchTraceCheckingCommand">
       </handler>
    </extension>
- -->
-<!--
+
    <extension
          point="org.eclipse.ui.commands">
       <category
@@ -71,13 +70,14 @@
             name="Launch DICE TraceChecking">
       </command>
    </extension>
+   -->
    <extension
          point="org.eclipse.debug.ui.launchShortcuts">
       <shortcut
-            class="it.polimi.dice.tracechecking.ui.launcher.TraceCheckingLaunchShortcut"
-            icon="icons/verify_icon.png"
+            class="it.polimi.dice.tracechecking.ui.launcher.StormTCLaunchShortcut"
+            icon="icons/tc_icon.png"
             id="it.polimi.dice.tracechecking.ui.shortcut"
-            label="DICE &amp;TraceChecking"
+            label="DICE &amp;TraceChecking - Storm"
             modes="run">
             <contextualLaunch>
          <enablement>
@@ -116,7 +116,7 @@
          </enablement>
  		</contextualLaunch>
        <configurationType
-              id="it.polimi.dice.tracechecking.launchConfigurationType1">
+              id="it.polimi.dice.tracechecking.launchConfigurationTypeStorm">
        </configurationType>
        <description
               description="Launches a tracechecking task on the specified UML model"
@@ -148,14 +148,14 @@
                type="org.eclipse.papyrus.uml.tools.model.UmlModel">
          </adapter>
       </factory>
-   </extension>
+   </extension> 
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
             category="org.dice.ui.preferences"
             class="it.polimi.dice.tracechecking.ui.preferences.DiceTraceCheckingPreferencePage"
             id="it.polimi.dice.tracechecking.ui.prefPage1"
-            name="TraceChecking Tools">
+            name="TraceChecking Tool">
       </page>
    </extension>
    <extension
@@ -164,5 +164,4 @@
             class="it.polimi.dice.tracechecking.ui.preferences.DiceTraceCheckingPreferencesInitializer">
       </initializer>
    </extension>
-   -->
 </plugin>

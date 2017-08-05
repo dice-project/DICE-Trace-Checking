@@ -34,10 +34,8 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -54,7 +52,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.uml2.uml.Element;
@@ -64,9 +61,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import it.polimi.dice.tracechecking.config.TraceCheckingToolSerializer;
+import it.polimi.dice.tracechecking.contentproviders.BoltsContentProvider;
+import it.polimi.dice.tracechecking.contentproviders.SpoutsContentProvider;
 import it.polimi.dice.tracechecking.core.logger.DiceLogger;
+import it.polimi.dice.tracechecking.core.ui.dialogs.DialogUtils;
 import it.polimi.dice.tracechecking.core.ui.dialogs.FileSelectionDialog;
-import it.polimi.dice.tracechecking.core.ui.dialogs.Utils;
 import it.polimi.dice.tracechecking.launcher.TraceCheckingLaunchConfigurationAttributes;
 import it.polimi.dice.tracechecking.ui.TraceCheckingUI;
 import it.polimi.dice.tracechecking.ui.launcher.editingsupports.DesignValueEditingSupport;
@@ -87,22 +86,21 @@ import it.polimi.dice.tracechecking.uml2json.json.Relation;
 import it.polimi.dice.tracechecking.uml2json.json.StormTopology;
 import it.polimi.dice.tracechecking.uml2json.json.TopologyNodeFormula;
 
-public class MainLaunchConfigurationTab extends AbstractLaunchConfigurationTab implements DirtableTab {
+public class TCStormMainLaunchConfigurationTab extends AbstractLaunchConfigurationTab implements DirtableTab {
 
 	private static final Image CHECKED = TraceCheckingUI.getDefault().getImageRegistry()
 			.get(TraceCheckingUI.IMG_CHECKED);;
 	private static final Image UNCHECKED = TraceCheckingUI.getDefault().getImageRegistry()
 			.get(TraceCheckingUI.IMG_UNCHECKED);
 
-	private class FormData {
+	public class FormData {
 		private String inputFile;
-		private int timeBound;
 		// private boolean keepIntermediateFiles;
 		// private List<TopologyNodeFormula> nodesFormulae = new ArrayList<>();
 		private List<TopologyNodeFormula> spoutsFormulae = new ArrayList<>();
 		private List<TopologyNodeFormula> boltsFormulae = new ArrayList<>();
-		private String hostAddress;
-		private String portNumber;
+		private String tcHostAddress;
+		private String tcPortNumber;
 		private String monitoringHostAddress;
 		private String monitoringPortNumber;
 
@@ -111,53 +109,65 @@ public class MainLaunchConfigurationTab extends AbstractLaunchConfigurationTab i
 		}
 
 		protected void setInputFile(String inputFile) {
+//			DiceLogger.logInfo(TraceCheckingUI.getDefault(), "setInputFile(" + inputFile + ")");
+			boolean forceReset = inputFile != this.inputFile;
 			this.inputFile = inputFile;
-			DiceLogger.logInfo(TraceCheckingUI.getDefault(), "setInputFile(" + inputFile + ")");
 			String readableInputFile = toReadableString(inputFile);
 			inputFileText.setText(readableInputFile != null ? readableInputFile : StringUtils.EMPTY);
-			boltsFormulae.clear();
-			spoutsFormulae.clear();
+			resetNodesIfNecessary(inputFile, forceReset);
+			setDirty(true);
+			updateLaunchConfigurationDialog();
+		}
+
+		private void resetNodesIfNecessary(String inputFile, boolean override) {
 			StormTopology topology = getVariablesFromUmlModel(new File(URI.create(inputFile)));
-			for (BoltClass b : topology.getBolts()) {
-				// populate list of bolts
-				boltsFormulae.add(new TopologyNodeFormula(b.getName(), NodeType.BOLT, NodeParameter.SIGMA,
-						new Float(0.0), new Float(0.0), new Float(0.0), Method.COUNTING, Relation.LTE,
-						new Float(b.getSigma())));
-				// config.getMonitoredBolts().put(var, false);
+			boolean necessary = false;
+			if (boltsFormulae.size() != topology.getBolts().size()
+					|| spoutsFormulae.size() != topology.getSpouts().size())
+				necessary = true;
+			else {
+				for (TopologyNodeFormula tnfBolt : boltsFormulae)
+					if (!topology.getBoltsNames().contains(tnfBolt.getName()))
+						necessary = true;
+				for (TopologyNodeFormula tnfSpout : spoutsFormulae)
+					if (!topology.getSpoutsNames().contains(tnfSpout.getName()))
+						necessary = true;
 			}
-			for (SpoutClass s : topology.getSpouts()) {
-				// populate list of spouts
-				spoutsFormulae.add(new TopologyNodeFormula(s.getName(), NodeType.SPOUT, NodeParameter.AVG_EMIT_RATE,
-						new Float(0.0), new Float(0.0), new Float(0.0), Method.COUNTING, Relation.LTE,
-						new Float(s.getAverageEmitRate())));
+			if (necessary || override) {
+				boltsFormulae.clear();
+				spoutsFormulae.clear();
+				for (BoltClass b : topology.getBolts()) {
+					// populate list of bolts
+					boltsFormulae.add(new TopologyNodeFormula(b.getName(), NodeType.BOLT, NodeParameter.SIGMA,
+							new Float(0.0), new Float(0.0), new Float(0.0), Method.COUNTING, Relation.LTE,
+							new Float(b.getSigma())));
+				}
+				for (SpoutClass s : topology.getSpouts()) {
+					// populate list of spouts
+					spoutsFormulae.add(new TopologyNodeFormula(s.getName(), NodeType.SPOUT, NodeParameter.AVG_EMIT_RATE,
+							new Float(0.0), new Float(0.0), new Float(0.0), Method.COUNTING, Relation.LTE,
+							new Float(s.getAverageEmitRate())));
+				}
 			}
 			boltsViewer.refresh();
 			spoutsViewer.refresh();
-			setDirty(true);
-			updateLaunchConfigurationDialog();
 		}
 
-		protected int getTimeBound() {
-			return timeBound;
-		}
-
-		protected void setTimeBound(int timeBound) {
-			this.timeBound = timeBound;
-			timeBoundSpinner.setSelection(timeBound);
-			setDirty(true);
-			updateLaunchConfigurationDialog();
-		}
-
-		protected List<TopologyNodeFormula> getSpoutsFormulae() {
+		public List<TopologyNodeFormula> getSpoutsFormulae() {
 			return spoutsFormulae;
 		}
 
-		protected List<TopologyNodeFormula> getBoltsFormulae() {
+		public List<TopologyNodeFormula> getBoltsFormulae() {
 			return boltsFormulae;
 		}
 
 		public void setSpoutsFormulae(List<TopologyNodeFormula> spoutsFormulae) {
 			this.spoutsFormulae = spoutsFormulae;
+			if (spoutsViewer != null) {
+				spoutsViewer.setInput(data);
+			}
+			setDirty(true);
+			updateLaunchConfigurationDialog();
 		}
 
 		public void setBoltsFormulae(List<TopologyNodeFormula> boltsFormulae) {
@@ -193,28 +203,28 @@ public class MainLaunchConfigurationTab extends AbstractLaunchConfigurationTab i
 			return monitoringPortNumber;
 		}
 
-		public void setHostAddress(String hostAddress, boolean refresh) {
-			this.hostAddress = hostAddress;
+		public void setTcHostAddress(String hostAddress, boolean refresh) {
+			this.tcHostAddress = hostAddress;
 			if (refresh)
 				hostText.setText(hostAddress);
 			setDirty(true);
 			updateLaunchConfigurationDialog();
 		}
 
-		public String getHostAddress() {
-			return hostAddress;
+		public String getTcHostAddress() {
+			return tcHostAddress;
 		}
 
-		public void setPortNumber(String portNumber, boolean refresh) {
-			this.portNumber = portNumber;
+		public void setTcPortNumber(String portNumber, boolean refresh) {
+			this.tcPortNumber = portNumber;
 			if (refresh)
 				portText.setText(portNumber);
 			setDirty(true);
 			updateLaunchConfigurationDialog();
 		}
 
-		public String getPortNumber() {
-			return portNumber;
+		public String getTcPortNumber() {
+			return tcPortNumber;
 		}
 
 		private String toReadableString(String fileUriString) {
@@ -238,42 +248,14 @@ public class MainLaunchConfigurationTab extends AbstractLaunchConfigurationTab i
 
 	}
 
-	private class BoltsContentProvider implements IStructuredContentProvider {
-		@Override
-		public Object[] getElements(Object inputElement) {
-			return ((FormData) inputElement).getBoltsFormulae().toArray();
-		}
-
-		@Override
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		}
-
-		@Override
-		public void dispose() {
-		}
-	}
-
-	private class SpoutsContentProvider implements IStructuredContentProvider {
-		@Override
-		public Object[] getElements(Object inputElement) {
-			return ((FormData) inputElement).getSpoutsFormulae().toArray();
-		}
-
-		@Override
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		}
-
-		@Override
-		public void dispose() {
-		}
-	}
-
 	public void updateMonitoringStatusFields() {
-		monitoringStatusText.setText(MessageFormat.format(Messages.MainLaunchConfigurationTab_displayMonitoringStatusLabel,
-				monitoringStatus.isAlive()));
+		monitoringStatusText.setText(MessageFormat
+				.format(Messages.MainLaunchConfigurationTab_displayMonitoringStatusLabel, monitoringStatus.isAlive()));
 		Device device = Display.getCurrent();
 		Color red = new Color(device, 255, 0, 0);
-		Color green = device.getSystemColor(SWT.COLOR_GREEN);//new Color(device, 0, 255, 0);
+		Color green = device.getSystemColor(SWT.COLOR_GREEN);// new
+																// Color(device,
+																// 0, 255, 0);
 		if (monitoringStatus.isAlive())
 			monitoringStatusText.setBackground(green);
 		else
@@ -284,14 +266,10 @@ public class MainLaunchConfigurationTab extends AbstractLaunchConfigurationTab i
 
 	protected Button verifyButton, activateButton, deactivateButton;
 	protected Text inputFileText;
-	protected Spinner timeBoundSpinner;
 	protected Button browseIntermediateFilesDirButton;
 	protected TableViewer boltsViewer, spoutsViewer;
 	protected TableViewerColumn boltSelectedColumn, boltNameColumn, parameterColumn, methodColumn, timeWindowCloumn,
 			timeSubWindowColumn, relationColumn, designValueColumn;
-	// protected TableViewerColumn boltSelectedColumn, boltNameColumn,
-	// parameterColumn, methodColumn, timeWindowCloumn,
-	// timeSubWindowColumn,relationColumn, designValueColumn;
 	protected Text hostText, portText;
 	protected Text monitoringHostText, monitoringPortText;
 
@@ -353,7 +331,8 @@ public class MainLaunchConfigurationTab extends AbstractLaunchConfigurationTab i
 				}
 			});
 
-			String statusURL = "http://109.231.122.169:5001/dmon/v1/overlord/storm/logs/active";
+			// String statusURL =
+			// "http://109.231.122.169:5001/dmon/v1/overlord/storm/logs/active";
 			verifyButton = new Button(group, SWT.NONE);
 			verifyButton.setText("Check");
 			GridData checkButtonLayout = new GridData(SWT.CENTER, SWT.CENTER, false, false);
@@ -362,11 +341,14 @@ public class MainLaunchConfigurationTab extends AbstractLaunchConfigurationTab i
 			verifyButton.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
+					String statusURL = "http://" + data.getMonitoringHostAddress() + ":"
+							+ data.getMonitoringPortNumber() + "/dmon/v1/overlord/storm/logs/active";
 					try {
 						URL url = new URL(statusURL);
 						HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 						conn.setRequestMethod("GET");
 						conn.setRequestProperty("Accept", "application/json");
+						conn.setReadTimeout(3000);
 
 						if (conn.getResponseCode() != 200) {
 							throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
@@ -386,11 +368,15 @@ public class MainLaunchConfigurationTab extends AbstractLaunchConfigurationTab i
 						updateMonitoringStatusFields();
 						updateLaunchConfigurationDialog();
 					} catch (MalformedURLException e0) {
-						e0.printStackTrace();
+						monitoringStatus.setAlive(false);
+						updateMonitoringStatusFields();
+						DialogUtils.getWarningDialog(e0, "Malformed URL",
+								"Please verify that the specified URL is correct (" + statusURL + ")");
 					} catch (IOException e1) {
 						monitoringStatus.setAlive(false);
 						updateMonitoringStatusFields();
-						Utils.openExceptionDialog(e1, "Please verify that the url is reachable (" + statusURL + ")");
+						DialogUtils.getWarningDialog(e1, "Connection Error",
+								"Please verify that the URL is reachable (" + statusURL + ")");
 					}
 				}
 
@@ -404,14 +390,13 @@ public class MainLaunchConfigurationTab extends AbstractLaunchConfigurationTab i
 			activateButton.setText("Activate");
 			activateButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 			activateButton.setEnabled(false);
-		
 
 			deactivateButton = new Button(group, SWT.NONE);
 			deactivateButton.setText("Deactivate");
 			deactivateButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 			deactivateButton.setEnabled(false);
-			
-			//updateMonitoringStatusFields();
+
+			// updateMonitoringStatusFields();
 		}
 
 		{ // Model Group
@@ -462,24 +447,6 @@ public class MainLaunchConfigurationTab extends AbstractLaunchConfigurationTab i
 			});
 		}
 
-		/*
-		 * //Time Bound group { Group group = new Group(comp, SWT.NONE);
-		 * group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true,
-		 * false));
-		 * 
-		 * group.setLayout(new GridLayout(2, false));
-		 * group.setText(Messages.MainLaunchConfigurationTab_timeBoundLabel);
-		 * timeBoundSpinner = new Spinner(group, SWT.BORDER);
-		 * timeBoundSpinner.setMaximum(100); timeBoundSpinner.setMinimum(10);
-		 * //timeBoundSpinner.setIncrement(1);
-		 * timeBoundSpinner.addSelectionListener(new SelectionAdapter() { public
-		 * void widgetSelected(SelectionEvent e) {
-		 * data.setTimeBound(timeBoundSpinner.getSelection()); setDirty(true);
-		 * }; });
-		 * 
-		 * }
-		 * 
-		 */
 		{ // Configuration Group - Set Monitored Bolts
 			Group group = new Group(comp, SWT.NONE);
 			group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -506,88 +473,14 @@ public class MainLaunchConfigurationTab extends AbstractLaunchConfigurationTab i
 
 			boltsViewer.setComparator(comparator);
 
-			/*
-			 * varViewerColumnBoolean = new TableViewerColumn(boltsViewer,
-			 * SWT.NONE); varViewerColumnBoolean.getColumn().setText(Messages.
-			 * MainLaunchConfigurationTab_boltLabel);
-			 * varViewerColumnBoolean.getColumn().setResizable(true);
-			 * varViewerColumnBoolean.setLabelProvider(new ColumnLabelProvider()
-			 * {
-			 * 
-			 * @Override public String getText(Object element) {
-			 * 
-			 * @SuppressWarnings("unchecked") Entry<String, Boolean> entry =
-			 * (Entry<String, Boolean>) element; //
-			 * DiceLogger.logError(DiceVerificationUiPlugin.getDefault(),
-			 * "Key: "+ entry.getKey() + " - Value: " + entry.getValue());
-			 * return entry.getKey(); } });
-			 * varViewerColumnBoolean.getColumn().addSelectionListener(new
-			 * SelectionAdapter() {
-			 * 
-			 * @Override public void widgetSelected(SelectionEvent e) {
-			 * MapEntryViewerBooleanComparator comparator =
-			 * (MapEntryViewerBooleanComparator) boltsViewer.getComparator();
-			 * comparator.setColumn(0); int dir = comparator.getDirection();
-			 * boltsViewer.getTable().setSortDirection(dir);
-			 * boltsViewer.getTable().setSortColumn(varViewerColumnBoolean.
-			 * getColumn()); boltsViewer.refresh(); } });
-			 * 
-			 * 
-			 * valueViewerColumnBoolean = new TableViewerColumn(boltsViewer,
-			 * SWT.NONE); valueViewerColumnBoolean.getColumn().setText(Messages.
-			 * MainLaunchConfigurationTab_monitoredLabel);
-			 * valueViewerColumnBoolean.getColumn().setResizable(true);
-			 * valueViewerColumnBoolean.setLabelProvider(new
-			 * ColumnLabelProvider() {
-			 * 
-			 * @Override public String getText(Object element) { // return null;
-			 * Entry<String, Boolean> entry = (Entry<String, Boolean>) element;
-			 * if (entry.getValue()) { return "Yes"; } else { return "No"; } }
-			 * 
-			 * @SuppressWarnings("unchecked")
-			 * 
-			 * @Override public Image getImage(Object element) { Entry<String,
-			 * Boolean> entry = (Entry<String, Boolean>) element;
-			 * 
-			 * if (entry.getValue()) { return CHECKED;
-			 * 
-			 * } else { return UNCHECKED; } } });
-			 * 
-			 * 
-			 * valueViewerColumnBoolean.setEditingSupport(new
-			 * ValueEditingSupportBoolean(boltsViewer));
-			 * valueViewerColumnBoolean.getColumn().addSelectionListener(new
-			 * SelectionAdapter() {
-			 * 
-			 * @Override public void widgetSelected(SelectionEvent e) {
-			 * MapEntryViewerBooleanComparator comparator =
-			 * (MapEntryViewerBooleanComparator) boltsViewer.getComparator();
-			 * comparator.setColumn(1); int dir = comparator.getDirection();
-			 * boltsViewer.getTable().setSortDirection(dir);
-			 * boltsViewer.getTable().setSortColumn(valueViewerColumnBoolean.
-			 * getColumn()); boltsViewer.refresh(); setDirty(true);
-			 * updateLaunchConfigurationDialog(); } });
-			 */
+		}
 
-			// boltsViewer.getTable().setSortColumn(varViewerColumnBoolean.getColumn());
-			// boltsViewer.getTable().setSortDirection(SWT.UP);
-
-			// define layout for the viewer
-			/*
-			 * GridData gridData = new GridData(); gridData.verticalAlignment =
-			 * GridData.FILL; gridData.horizontalSpan = 2;
-			 * gridData.grabExcessHorizontalSpace = true;
-			 * gridData.grabExcessVerticalSpace = true;
-			 * gridData.horizontalAlignment = GridData.FILL;
-			 * boltsViewer.getControl().setLayoutData(gridData);
-			 */ }
-
-		{ // Configuration Group - Set Monitored Bolts
+		{ // Configuration Group - Set Monitored Spouts
 			Group group = new Group(comp, SWT.NONE);
 			group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 			group.setLayout(new GridLayout(1, false));
-			group.setText(Messages.MainLaunchConfigurationTab_monitoredBoltsLabel);
+			group.setText(Messages.MainLaunchConfigurationTab_monitoredSpoutsLabel);
 
 			Composite tableComposite = new Composite(group, SWT.NONE);
 			tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -627,7 +520,7 @@ public class MainLaunchConfigurationTab extends AbstractLaunchConfigurationTab i
 				public void modifyText(ModifyEvent event) {
 					// Get the widget whose text was modified
 					Text text = (Text) event.widget;
-					data.setHostAddress(text.getText(), false);
+					data.setTcHostAddress(text.getText(), false);
 					setDirty(true);
 					updateLaunchConfigurationDialog();
 				}
@@ -643,7 +536,7 @@ public class MainLaunchConfigurationTab extends AbstractLaunchConfigurationTab i
 				public void modifyText(ModifyEvent event) {
 					// Get the widget whose text was modified
 					Text text = (Text) event.widget;
-					data.setPortNumber(text.getText(), false);
+					data.setTcPortNumber(text.getText(), false);
 					setDirty(true);
 					updateLaunchConfigurationDialog();
 				}
@@ -657,24 +550,29 @@ public class MainLaunchConfigurationTab extends AbstractLaunchConfigurationTab i
 
 	@Override
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
+//		DiceLogger.logInfo(TraceCheckingUI.getDefault(), "setDefaults()");
 		configuration.removeAttribute(TraceCheckingLaunchConfigurationAttributes.INPUT_FILE);
-		// configuration.setAttribute(TraceCheckingLaunchConfigurationAttributes.KEEP_INTERMEDIATE_FILES,
-		// false);
-		// configuration.removeAttribute(TraceCheckingLaunchConfigurationAttributes.INTERMEDIATE_FILES_DIR);
 		configuration.removeAttribute(TraceCheckingLaunchConfigurationAttributes.BOLTS_FORMULAE);
 		configuration.removeAttribute(TraceCheckingLaunchConfigurationAttributes.SPOUTS_FORMULAE);
-		configuration.setAttribute(TraceCheckingLaunchConfigurationAttributes.TIME_BOUND, 15);
-		configuration.setAttribute(TraceCheckingLaunchConfigurationAttributes.HOST_ADDRESS, "localhost");
-		configuration.setAttribute(TraceCheckingLaunchConfigurationAttributes.PORT_NUMBER, 5000);
+		configuration.setAttribute(TraceCheckingLaunchConfigurationAttributes.TC_HOST_ADDRESS,
+				TraceCheckingUI.getDefault().getPreferenceStore()
+						.getString(it.polimi.dice.tracechecking.ui.preferences.PreferenceConstants.TC_HOST.getName()));
+		configuration.setAttribute(TraceCheckingLaunchConfigurationAttributes.TC_PORT_NUMBER,
+				TraceCheckingUI.getDefault().getPreferenceStore()
+						.getString(it.polimi.dice.tracechecking.ui.preferences.PreferenceConstants.TC_PORT.getName()));
+		configuration.setAttribute(TraceCheckingLaunchConfigurationAttributes.MONITORING_HOST_ADDRESS,
+				TraceCheckingUI.getDefault().getPreferenceStore().getString(
+						it.polimi.dice.tracechecking.ui.preferences.PreferenceConstants.MONITORING_HOST.getName()));
+		configuration.setAttribute(TraceCheckingLaunchConfigurationAttributes.MONITORING_PORT_NUMBER,
+				TraceCheckingUI.getDefault().getPreferenceStore().getString(
+						it.polimi.dice.tracechecking.ui.preferences.PreferenceConstants.MONITORING_PORT.getName()));
 	}
 
 	@Override
 	public void initializeFrom(ILaunchConfiguration configuration) {
-		DiceLogger.logInfo(TraceCheckingUI.getDefault(), "initializeFrom()");
+//		DiceLogger.logInfo(TraceCheckingUI.getDefault(), "initializeFrom()");
 		try {
 			if (configuration.hasAttribute(TraceCheckingLaunchConfigurationAttributes.INPUT_FILE)) {
-				String inputFile = configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.INPUT_FILE,
-						StringUtils.EMPTY);
 				data.setInputFile(configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.INPUT_FILE,
 						StringUtils.EMPTY));
 			}
@@ -700,13 +598,28 @@ public class MainLaunchConfigurationTab extends AbstractLaunchConfigurationTab i
 				}
 			}
 
-			if (configuration.hasAttribute(TraceCheckingLaunchConfigurationAttributes.HOST_ADDRESS)) {
-				data.setHostAddress(configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.HOST_ADDRESS,
-						"http://localhost"), true);
+			if (configuration.hasAttribute(TraceCheckingLaunchConfigurationAttributes.TC_HOST_ADDRESS)) {
+				data.setTcHostAddress(
+						configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.TC_HOST_ADDRESS,
+								TraceCheckingLaunchConfigurationAttributes.DEFAULT_TC_HOST_ADDRESS),
+						true);
 			}
-			if (configuration.hasAttribute(TraceCheckingLaunchConfigurationAttributes.PORT_NUMBER)) {
-				data.setPortNumber(
-						configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.PORT_NUMBER, "5000"),
+			if (configuration.hasAttribute(TraceCheckingLaunchConfigurationAttributes.TC_PORT_NUMBER)) {
+				data.setTcPortNumber(
+						configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.TC_PORT_NUMBER,
+								TraceCheckingLaunchConfigurationAttributes.DEFAULT_TC_PORT_NUMBER),
+						true);
+			}
+			if (configuration.hasAttribute(TraceCheckingLaunchConfigurationAttributes.MONITORING_HOST_ADDRESS)) {
+				data.setMonitoringHostAddress(
+						configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.MONITORING_HOST_ADDRESS,
+								TraceCheckingLaunchConfigurationAttributes.DEFAULT_MONITORING_HOST_ADDRESS),
+						true);
+			}
+			if (configuration.hasAttribute(TraceCheckingLaunchConfigurationAttributes.MONITORING_PORT_NUMBER)) {
+				data.setMonitoringPortNumber(
+						configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.MONITORING_PORT_NUMBER,
+								TraceCheckingLaunchConfigurationAttributes.DEFAULT_MONITORING_PORT_NUMBER),
 						true);
 			}
 		} catch (CoreException e) {
@@ -716,14 +629,18 @@ public class MainLaunchConfigurationTab extends AbstractLaunchConfigurationTab i
 
 	@Override
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		DiceLogger.logInfo(TraceCheckingUI.getDefault(), "performApply(" + data.getInputFile() + ")");
+//		DiceLogger.logInfo(TraceCheckingUI.getDefault(), "performApply(" + data.getInputFile() + ")");
 		configuration.setAttribute(TraceCheckingLaunchConfigurationAttributes.INPUT_FILE, data.getInputFile());
 		configuration.setAttribute(TraceCheckingLaunchConfigurationAttributes.BOLTS_FORMULAE,
 				TraceCheckingToolSerializer.serialize(data.getBoltsFormulae()));
 		configuration.setAttribute(TraceCheckingLaunchConfigurationAttributes.SPOUTS_FORMULAE,
 				TraceCheckingToolSerializer.serialize(data.getSpoutsFormulae()));
-		configuration.setAttribute(TraceCheckingLaunchConfigurationAttributes.HOST_ADDRESS, hostText.getText());
-		configuration.setAttribute(TraceCheckingLaunchConfigurationAttributes.PORT_NUMBER, portText.getText());
+		configuration.setAttribute(TraceCheckingLaunchConfigurationAttributes.TC_HOST_ADDRESS, data.getTcHostAddress());
+		configuration.setAttribute(TraceCheckingLaunchConfigurationAttributes.TC_PORT_NUMBER, data.getTcPortNumber());
+		configuration.setAttribute(TraceCheckingLaunchConfigurationAttributes.MONITORING_HOST_ADDRESS,
+				data.getMonitoringHostAddress());
+		configuration.setAttribute(TraceCheckingLaunchConfigurationAttributes.MONITORING_PORT_NUMBER,
+				data.getMonitoringPortNumber());
 	}
 
 	@Override
@@ -757,14 +674,9 @@ public class MainLaunchConfigurationTab extends AbstractLaunchConfigurationTab i
 		StormTopology topology = new StormTopology();
 		List<SpoutClass> spouts = new ArrayList<>();
 		List<BoltClass> bolts = new ArrayList<>();
-		// Gson gson = new Gson();
-		// XMLResource r2 = null;
 		try {
 			resource = resourceSet.getResource(org.eclipse.emf.common.util.URI.createFileURI(file.getAbsolutePath()),
 					true);
-			// r2 =
-			// (XMLResource)resourceSet.getResource(org.eclipse.emf.common.util.URI.createFileURI(file.getAbsolutePath()),
-			// true);
 			for (Iterator<EObject> it = resource.getAllContents(); it.hasNext();) {
 				EObject eObject = it.next();
 				if (eObject instanceof org.eclipse.uml2.uml.Class) {
@@ -776,13 +688,9 @@ public class MainLaunchConfigurationTab extends AbstractLaunchConfigurationTab i
 						BoltClass bc = new BoltClass((org.eclipse.uml2.uml.Class) eObject);
 						vars.add(bc.getId());
 						bolts.add(bc);
-						// DiceLogger.logError(DiceVerificationUiPlugin.getDefault(),
-						// gson.toJson(bc));
 					}
 					topology.setBolts(bolts);
 					topology.setSpouts(spouts);
-					// DiceLogger.logError(DiceVerificationUiPlugin.getDefault(),
-					// gson.toJson(topology));
 				}
 			}
 
@@ -815,14 +723,6 @@ public class MainLaunchConfigurationTab extends AbstractLaunchConfigurationTab i
 			}
 		});
 		boltSelectedColumn.setEditingSupport(new SelectedEditingSupport(viewer, getShell(), this));
-		/*
-		 * boltSelectedColumn.getColumn().addSelectionListener(new
-		 * SelectionAdapter() {
-		 * 
-		 * @Override public void widgetSelected(SelectionEvent e) {
-		 * viewer.refresh(); setDirty(true); updateLaunchConfigurationDialog();
-		 * } });
-		 */
 		// boltName column
 		TableViewerColumn boltNameColumn = createTableViewerColumn(viewer, titles[1], bounds[1], 1);
 		boltNameColumn.setLabelProvider(new ColumnLabelProvider() {
@@ -843,15 +743,6 @@ public class MainLaunchConfigurationTab extends AbstractLaunchConfigurationTab i
 			}
 		});
 		parameterColumn.setEditingSupport(new ParameterEditingSupport(viewer, this));
-		/*
-		 * parameterColumn.getColumn().addSelectionListener(new
-		 * SelectionAdapter() {
-		 * 
-		 * @Override public void widgetSelected(SelectionEvent e) {
-		 * viewer.refresh(); setDirty(true); updateLaunchConfigurationDialog();
-		 * } });
-		 */
-
 		// method column
 		TableViewerColumn methodColumn = createTableViewerColumn(viewer, titles[3], bounds[3], 3);
 		methodColumn.setLabelProvider(new ColumnLabelProvider() {

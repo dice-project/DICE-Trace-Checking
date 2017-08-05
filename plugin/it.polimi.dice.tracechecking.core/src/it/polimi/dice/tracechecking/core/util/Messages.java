@@ -3,7 +3,7 @@ package it.polimi.dice.tracechecking.core.util;
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
-	private static final String BUNDLE_NAME = "it.polimi.dice.core.util.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "it.polimi.dice.tracechecking.core.util.messages"; //$NON-NLS-1$
 	public static String StreamRedirector_unableToRedirectStreamError;
 
 	static {

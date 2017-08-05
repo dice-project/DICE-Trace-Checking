@@ -18,7 +18,12 @@ Require-Bundle: org.eclipse.ui,
  it.polimi.dice.tracechecking.core.ui,
  it.polimi.dice.tracechecking.core,
  it.polimi.dice.tracechecking.uml2json,
- it.polimi.dice.tracechecking
+ it.polimi.dice.tracechecking,
+ org.eclipse.papyrus.infra.onefile;bundle-version="1.1.4",
+ org.eclipse.papyrus.infra.core;bundle-version="1.1.4",
+ org.eclipse.papyrus.uml.tools,
+ org.eclipse.papyrus.infra.services.resourceloading,
+ org.eclipse.core.resources
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: it.polimi.dice.tracechecking.launcher

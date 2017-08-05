@@ -20,21 +20,26 @@ import it.polimi.dice.tracechecking.httpclient.HttpClient;
 import it.polimi.dice.tracechecking.uml2json.json.TopologyNodeFormula;
 import it.polimi.dice.tracechecking.uml2json.json.TraceCheckingRequest;
 
-
-
-
-public class TraceCheckingLaunchConfigurationDelegate extends LaunchConfigurationDelegate{
+public class TraceCheckingLaunchConfigurationDelegate extends LaunchConfigurationDelegate {
 
 	@Override
 	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
 			throws CoreException {
-		String serverAddress = configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.HOST_ADDRESS, "http://localhost");
-		String serverPort = configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.PORT_NUMBER, "5000");
-		
+		String tcServerAddress = configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.TC_HOST_ADDRESS,
+				TraceCheckingLaunchConfigurationAttributes.DEFAULT_TC_HOST_ADDRESS);
+		String tcServerPort = configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.TC_PORT_NUMBER,
+				TraceCheckingLaunchConfigurationAttributes.DEFAULT_TC_PORT_NUMBER);
+
+		String monitoringServerAddress = configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.MONITORING_HOST_ADDRESS,
+				TraceCheckingLaunchConfigurationAttributes.DEFAULT_MONITORING_HOST_ADDRESS);
+		String monitoringServerPort = configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.MONITORING_PORT_NUMBER,
+				TraceCheckingLaunchConfigurationAttributes.DEFAULT_MONITORING_PORT_NUMBER);
+
 		
 		List<TopologyNodeFormula> nodeFormulae = new ArrayList<>();
 		// get the serialized boltsFormulae parameter
-		String s_boltFormulae = configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.BOLTS_FORMULAE, "[]");
+		String s_boltFormulae = configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.BOLTS_FORMULAE,
+				"[]");
 		System.out.println(s_boltFormulae);
 		try {
 			List<TopologyNodeFormula> boltFormulae = TraceCheckingToolSerializer.deserialize(s_boltFormulae);
@@ -49,7 +54,8 @@ public class TraceCheckingLaunchConfigurationDelegate extends LaunchConfiguratio
 		}
 
 		// get the serialized spoutFormulae parameter
-		String s_spoutsFormulae = configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.SPOUTS_FORMULAE, "[]");
+		String s_spoutsFormulae = configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.SPOUTS_FORMULAE,
+				"[]");
 		System.out.println(s_boltFormulae);
 		try {
 			List<TopologyNodeFormula> spoutFormulae = TraceCheckingToolSerializer.deserialize(s_spoutsFormulae);
@@ -63,43 +69,55 @@ public class TraceCheckingLaunchConfigurationDelegate extends LaunchConfiguratio
 			e.printStackTrace();
 		}
 
-		TraceCheckingRequest tcRequest = new TraceCheckingRequest("prova", nodeFormulae); 
-				
-		String launchTCUrl = serverAddress+":"+serverPort+"/"+"SERVICENAME";
-		
-		ExclusionStrategy exclusionStrategy = new ExclusionStrategy() {
-		    public boolean shouldSkipField(FieldAttributes fieldAttributes) {
-		        if("selected".equals(fieldAttributes.getName())){
-		            return true;
-		        }
-		        return false;
-		    }
+		TraceCheckingRequest tcRequest = new TraceCheckingRequest("TOPOLOGY", nodeFormulae);
 
-		    public boolean shouldSkipClass(Class<?> aClass) {
-		        return false;
-		    }
+		String launchTCUrl = tcServerAddress + ":" + tcServerPort + "/run?ip=" + monitoringServerAddress +"&port=" + monitoringServerPort;	
+
+		ExclusionStrategy exclusionStrategy = new ExclusionStrategy() {
+			public boolean shouldSkipField(FieldAttributes fieldAttributes) {
+				if ("selected".equals(fieldAttributes.getName())) {
+					return true;
+				}
+				return false;
+			}
+
+			public boolean shouldSkipClass(Class<?> aClass) {
+				return false;
+			}
 		};
-		
-		
+
 		Gson gsonBuilder = new GsonBuilder().disableHtmlEscaping().setExclusionStrategies(exclusionStrategy).create();
-		
+
 		HttpClient nc = new HttpClient();
 		boolean connectionSuccessful;
 		System.out.println("Creating request:\n" + gsonBuilder.toJson(tcRequest));
 		connectionSuccessful = nc.postJSONRequest(launchTCUrl, gsonBuilder.toJson(tcRequest));
 		
-		if (connectionSuccessful){
+		
+		
+		/*if (connectionSuccessful) {
 			try {
-			    Thread.sleep(5000);                 
-			} catch(InterruptedException ex) {
-			    Thread.currentThread().interrupt();
-			}
-			nc.getTaskStatusUpdatesFromServer();
-	//		openNewBrowserTab(new URL(dashboardUrl), "task-list");
-		}
-		
-		
-	}
+				Display.getDefault().asyncExec(new Runnable() {
+				    @Override
+				    public void run() {
+							try {
+								IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+								IViewPart view = page.showView("it.polimi.dice.tracechecking.views.view1");
+								
+								
+							} catch (PartInitException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}						
+					}
+				});
 
+				Thread.sleep(5000);
+			} catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+		}*/
+
+	}
 	
 }
