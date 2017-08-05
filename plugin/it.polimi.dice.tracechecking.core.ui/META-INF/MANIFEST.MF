@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: DICE Core UI
+Bundle-SymbolicName: it.polimi.dice.tracechecking.core.ui;singleton:=true
+Bundle-Version: 0.1.0.qualifier
+Bundle-Activator: it.polimi.dice.tracechecking.core.ui.DiceCoreUiPlugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.ui,
+ org.eclipse.ui.ide,
+ org.eclipse.jface,
+ org.eclipse.ui.workbench
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Import-Package: org.apache.commons.lang3
+Export-Package: it.polimi.dice.tracechecking.core.ui.dialogs

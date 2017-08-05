@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Uml2json
+Bundle-SymbolicName: it.polimi.dice.tracechecking.uml2json;singleton:=true
+Bundle-Version: 0.1.0.qualifier
+Bundle-Activator: it.polimi.dice.tracechecking.uml2json.Uml2json
+Require-Bundle: org.eclipse.core.runtime,
+ com.google.gson,
+ org.apache.log4j,
+ org.eclipse.uml2.uml
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Export-Package: it.polimi.dice.tracechecking.uml.diagrams.classdiagram,
+ it.polimi.dice.tracechecking.uml.helpers,
+ it.polimi.dice.tracechecking.uml2json.json
