@@ -19,6 +19,8 @@ import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import it.polimi.dice.tracechecking.TraceCheckingPlugin;
 import it.polimi.dice.tracechecking.core.logger.DiceLogger;
@@ -95,8 +97,11 @@ public class HttpClient {
 			//Gson gson = new GsonBuilder().create();
 			// this.setTaskStatus(gson.fromJson(responseString,
 			// VerificationTask.class));
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			JsonParser jp = new JsonParser();
+			JsonElement je = jp.parse(responseString);
 			
-			DialogUtils.getWarningDialog(null, "TraceCheckingOutput", responseString);
+			DialogUtils.getWarningDialog(null, "TraceCheckingOutput", gson.toJson(je));
 			
 			conn.disconnect();
 
@@ -151,6 +156,7 @@ public class HttpClient {
 				System.out.println(outputLine);
 			}
 
+			
 			// getting task status from json response
 			//Gson gson = new GsonBuilder().create();
 			// this.setTaskStatus(gson.fromJson(responseString,
