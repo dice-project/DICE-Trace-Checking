@@ -66,6 +66,9 @@ class SimpleTC():
 			raise Exception("Error while reading history file - " + str(error))
 
 
+		if (not os.path.exists("./results")):
+			os.makedirs("./results")
+
 		with open(os.path.join("./results", formula.typename()+nodename+".res"), 'w') as ff:
 			if (type(formula) is SigmaQuantitative):
 				ff.write(str(float(n_receive)/n_emit))
