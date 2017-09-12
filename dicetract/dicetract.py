@@ -65,6 +65,15 @@ class ConverterNodesItem( AbstractConverter ):
 		return s
 
 
+class ConverterNodesItemBis( AbstractConverter ):
+	
+	@classmethod
+	def convert(cls, item):
+		s = []
+		for e in item:
+			s = s + [{'name':e['name'], 'timewindow':e['timewindow']}]
+		return s
+
 
 class SimpleDMonQuery( AbstractDMonQuery ):
 	
@@ -110,6 +119,10 @@ class DMonQuery( VisitableDMonQuery ):
 	def getDescriptor(self):
 		return self._query.getDescriptor()
 
+	def getTCInstance(self, visitor):
+		return visitor.visit(self)	
+
+
 
 class VisitorDMonQuery():
 	__metaclass__ = abc.ABCMeta
@@ -134,7 +147,7 @@ class VisitorClassSigmaSpoutRate( VisitorDMonQuery ):
 		for e in d["nodes"]:
 			if (e["parameter"] == 'sigma'):
 				flag_sigma = True
-			if (e["parameter"] == 'spoutrate'):
+			if (e["parameter"] == 'avg_emit_rate'):
 				flag_spoutrate = True
 	
 		if (flag_sigma and flag_spoutrate):
@@ -143,6 +156,22 @@ class VisitorClassSigmaSpoutRate( VisitorDMonQuery ):
 			return 're_exclamation_sigma_thread.json'
 		elif (flag_spoutrate):
 			return 're_exclamation_spoutrate_thread.json'
+
+
+
+class VisitorDescriptorInstance( VisitorDMonQuery ):
+# This class modifies the TC instance received from the user in order to produce a TC instance that is ready for dicetract
+
+	def visit(self, query):
+		assert (type(query) is DMonQuery), "VisitorDescriptorInstance received an object to visit not of type DMonQuery"
+		d = query.getDescriptor()
+
+		for e in d["nodes"]:
+			if (e["parameter"] == 'avg_emit_rate'):
+				e["parameter"] = 'spoutrate'
+
+		return d
+	
 
 
 class AbstractDMonConnector():
@@ -438,24 +467,15 @@ class RemoteDmonConnector( AbstractDMonConnector ):
 
 
 
-	
-
-
-
-
-
-
 
 def dicetractor(dmon, tc_descriptor):
 
 	#build the rest json query from the TC descriptor by means of the converters (that allow for intepreting the TC descriptor)
 	dmon_query = DMonQuery(SimpleDMonQuery(tc_descriptor))
 	rest_jsonquery = dmon_query.translate({'nodes':ConverterNodesItem}) 	
-	
-	visitorSigmaSpoutRate = VisitorClassSigmaSpoutRate()
 
 	#set the variable specifying the json file including the description of the regural expression used to parse the logs
-	rexp_file = dmon_query.getRegExp(visitorSigmaSpoutRate)
+	rexp_file = dmon_query.getRegExp(VisitorClassSigmaSpoutRate())
 
 	print 'Regexp definition at:', rexp_file
 
@@ -497,7 +517,7 @@ def dicetractor(dmon, tc_descriptor):
 
 		merger.merge(log_files, rexp_file)
 		
-		tc_instances = TCRunner(tc_descriptor)
+		tc_instances = TCRunner(dmon_query.getTCInstance(VisitorDescriptorInstance()))
 		for i in tc_instances:
 			try:
 				i.run()	
