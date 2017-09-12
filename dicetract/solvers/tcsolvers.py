@@ -7,7 +7,7 @@ from subprocess import call
 # DICE-TraCT definitions and classes 
 # ----------------------------------
 from engines.simpleTC import SimpleTC 
-from formulaHandler.formula import SigmaCountEQ, SigmaCountLT, SigmaCountGT, SigmaAverageEQ, SigmaAverageLT, SigmaAverageGT, SpoutRateCountEQ, SpoutRateCountLT, SpoutRateCountGT, SpoutRateAverageEQ, SpoutRateAverageLT, SpoutRateAverageGT, SimpleTCWrapper, SigmaQuantitative, SpoutRateQuantitative
+from formulaHandler.formula import SigmaCountEQ, SigmaCountLT, SigmaCountGT, SigmaAverageEQ, SigmaAverageLT, SigmaAverageGT, SpoutRateCountEQ, SpoutRateCountLT, SpoutRateCountGT, SpoutRateAverageEQ, SpoutRateAverageLT, SpoutRateAverageGT, SimpleTCWrapper, SigmaQuantitativeEQ, SigmaQuantitativeLT, SigmaQuantitativeGT, SpoutRateQuantitativeEQ, SpoutRateQuantitativeLT, SpoutRateQuantitativeGT, SigmaQuantitative, SpoutRateQuantitative
 # ----------------------------------
 
 
@@ -138,8 +138,8 @@ class SimpleTCSolver( TCSolver ):
 
 
 	def canProcess(self, formula):
-		if ( (type(formula) is SigmaQuantitative) or
-			  (type(formula) is SpoutRateQuantitative) ):
+		if ( isinstance(formula, SigmaQuantitative) or
+			  isinstance(formula, SpoutRateQuantitative) ):
 			return True
 		else:
 			return False
@@ -149,7 +149,7 @@ class SimpleTCSolver( TCSolver ):
 		self.tc.run(self.__nodename, self.__formula)
 
 	def getResult(self):
-		r_json = {"node": None, "result": None}
+		r_json = {"node": None, "metric_value": None, "result": None}
 		r = ""
 		try:
 			with open('./results/' + self.__formula.typename() + self.__nodename + '.res', 'r') as fo:
@@ -160,7 +160,25 @@ class SimpleTCSolver( TCSolver ):
 			return None
 
 		r_json["node"] = self.__nodename
-		r_json["result"] = r
+		r_json["metric_value"] = r
+
+		if ( (type(self.__formula) is SigmaQuantitativeEQ) or (type(self.__formula) is SpoutRateQuantitativeEQ) ):
+			r_json["result"] = (r==self.__formula.getValues()[1])
+
+		elif ( (type(self.__formula) is SigmaQuantitativeEQ) or (type(self.__formula) is SpoutRateQuantitativeEQ) ):
+			r_json["result"] = (self.__formula.getValues())
+
+		elif ( (type(self.__formula) is SigmaQuantitativeGT) or (type(self.__formula) is SpoutRateQuantitativeGT) ):
+			r_json["result"] = (r>self.__formula.getValues()[1])
+
+		elif ( (type(self.__formula) is SigmaQuantitativeGT) or (type(self.__formula) is SpoutRateQuantitativeGT) ):
+			r_json["result"] = (r>self.__formula.getValues()[2])
+
+		elif ( (type(self.__formula) is SigmaQuantitativeLT) or (type(self.__formula) is SpoutRateCountLT) ):
+			r_json["result"] = (r<self.__formula.getValues()[1])
+
+		elif ( (type(self.__formula) is SigmaQuantitativeLT) or (type(self.__formula) is SpoutRateQuantitativeLT) ):
+			r_json["result"] = (r<self.__formula.getValues()[2])
 
 		return r_json
 
