@@ -149,7 +149,7 @@ class SimpleTCSolver( TCSolver ):
 		self.tc.run(self.__nodename, self.__formula)
 
 	def getResult(self):
-		r_json = {"node": None, "metric_value": None, "result": None}
+		r_json = {"property": {}, "metric_value": None, "result": None}
 		r = ""
 		try:
 			with open('./results/' + self.__formula.typename() + self.__nodename + '.res', 'r') as fo:
@@ -159,26 +159,27 @@ class SimpleTCSolver( TCSolver ):
 			logging.error('Error while opening result file produced by Simple Trace Checker: %s', str(err))
 			return None
 
-		r_json["node"] = self.__nodename
-		r_json["metric_value"] = r
+		# define the outcome  
+		r_json["property"].update({"name": self.__nodename})
+
+		if (isinstance(self.__formula, SigmaQuantitative)):
+			 r_json["property"].update({"parameter": "sigma", "timewindow": self.__formula.getValues()[0], "designvalue": self.__formula.getValues()[1]})
+		elif (isinstance(self.__formula, SpoutRateQuantitative)):
+			r_json["property"].update({"parameter": "avg_emit_rate", "timewindow": self.__formula.getValues()[0], "designvalue": self.__formula.getValues()[2]})
+
+ 		r_json["metric_value"] = r
 
 		if ( (type(self.__formula) is SigmaQuantitativeEQ) or (type(self.__formula) is SpoutRateQuantitativeEQ) ):
 			r_json["result"] = (r==self.__formula.getValues()[1])
-
-		elif ( (type(self.__formula) is SigmaQuantitativeEQ) or (type(self.__formula) is SpoutRateQuantitativeEQ) ):
-			r_json["result"] = (self.__formula.getValues())
+			r_json["property"].update({"relation": "="})
 
 		elif ( (type(self.__formula) is SigmaQuantitativeGT) or (type(self.__formula) is SpoutRateQuantitativeGT) ):
 			r_json["result"] = (r>self.__formula.getValues()[1])
-
-		elif ( (type(self.__formula) is SigmaQuantitativeGT) or (type(self.__formula) is SpoutRateQuantitativeGT) ):
-			r_json["result"] = (r>self.__formula.getValues()[2])
-
-		elif ( (type(self.__formula) is SigmaQuantitativeLT) or (type(self.__formula) is SpoutRateCountLT) ):
-			r_json["result"] = (r<self.__formula.getValues()[1])
+			r_json["property"].update({"relation": ">"})
 
 		elif ( (type(self.__formula) is SigmaQuantitativeLT) or (type(self.__formula) is SpoutRateQuantitativeLT) ):
 			r_json["result"] = (r<self.__formula.getValues()[2])
+			r_json["property"].update({"relation": "<"})
 
 		return r_json
 
