@@ -70,10 +70,10 @@ class SimpleTC():
 			os.makedirs("./results")
 
 		with open(os.path.join("./results", formula.typename()+nodename+".res"), 'w') as ff:
-			if (type(formula) is SigmaQuantitative):
+			if (isinstance(formula, SigmaQuantitative) ):
 				ff.write(str(float(n_receive)/n_emit))
 
-			elif (type(formula) is SpoutRateQuantitative):
+			elif (isinstance(formula, SpoutRateQuantitative) ):
 				if ((int(t_last)-int(t_init))<window_endpoint):
 					ff.write(str(1000*float(n_emit)/(int(t_last)-int(t_init))))
 				else:
