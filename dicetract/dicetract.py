@@ -255,8 +255,8 @@ class LocalDMonConnector( AbstractDMonConnector ):
 			if (output_tar is None or output_tar == ''):
 				raise RuntimeError("tar file from DMON is empty")
 
-			os.remove(os.path.join(self.getlogFolder(), workerlogToCheck))
-			os.rename(os.path.join(self.getlogFolder(), output_tar.strip('\n')), os.path.join(self.getlogFolder(), workerlogToCheck))
+			#os.remove(os.path.join(self.getlogFolder(), workerlogToCheck))
+			#os.rename(os.path.join(self.getlogFolder(), output_tar.strip('\n')), os.path.join(self.getlogFolder(), workerlogToCheck))
 
 			output_tar = check_output(['tar', '-xvf', os.path.join(self.getlogFolder(),workerlogToCheck), '--directory', self.getlogFolder()])
 
