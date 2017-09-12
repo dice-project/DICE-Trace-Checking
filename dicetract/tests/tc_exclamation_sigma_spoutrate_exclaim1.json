@@ -13,7 +13,7 @@
 		{
 			"name": "word",
 			"type": "spout",
-			"parameter": "spoutrate",
+			"parameter": "avg_emit_rate",
 			"timewindow": 3600,
 			"timesubwindow": "36",
 			"method": "average",

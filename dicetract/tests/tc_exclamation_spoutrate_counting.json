@@ -4,7 +4,7 @@
 		{
 			"name": "word",
 			"type": "spout",
-			"parameter": "spoutrate",
+			"parameter": "avg_emit_rate",
 			"timewindow": 3600,
 			"method": "counting",
 			"relation": "=",
