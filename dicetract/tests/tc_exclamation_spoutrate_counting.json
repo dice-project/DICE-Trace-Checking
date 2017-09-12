@@ -8,7 +8,7 @@
 			"timewindow": 3600,
 			"method": "counting",
 			"relation": "=",
-			"designvalue": "1.0"
+			"designvalue": 1.0
 		}
 	],
 	"formulae": [

@@ -9,7 +9,7 @@
 			"timesubwindow": 36,
 			"method": "counting",
 			"relation": "=",
-			"designvalue": "0.8"
+			"designvalue": 0.8
 		}
 	],
 	"formulae": [

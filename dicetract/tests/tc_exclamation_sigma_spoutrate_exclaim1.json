@@ -8,17 +8,17 @@
 			"timewindow": 3600,
 			"method": "counting",
 			"relation": "=",
-			"designvalue": "0.8"
+			"designvalue": 0.8
 		},
 		{
 			"name": "word",
 			"type": "spout",
 			"parameter": "avg_emit_rate",
 			"timewindow": 3600,
-			"timesubwindow": "36",
+			"timesubwindow": 36,
 			"method": "average",
 			"relation": "<",
-			"designvalue": "0.3"
+			"designvalue": 0.3
 		}
 	],
 	"formulae": [
