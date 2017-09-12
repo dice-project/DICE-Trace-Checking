@@ -473,24 +473,56 @@ class SpoutRateQuantitative( Formula ):
 		pass
 
 
+class SigmaQuantitativeEQ( SigmaQuantitative ):
+
+	def __init__(self, template, values):
+		SigmaQuantitative.__init__(self, "", values)
+
+
+class SigmaQuantitativeLT( SigmaQuantitative ):
+
+	def __init__(self, template, values):
+		SigmaQuantitative.__init__(self, "", values)
+
+
+class SigmaQuantitativeGT( SigmaQuantitative ):
+
+	def __init__(self, template, values):
+		SigmaQuantitative.__init__(self, "", values)
+
+
+
+class SpoutRateQuantitativeEQ( SpoutRateQuantitative ):
+
+	def __init__(self, template, values):
+		SpoutRateQuantitative.__init__(self, "", values)
+
+
+class SpoutRateQuantitativeLT( SpoutRateQuantitative ):
+
+	def __init__(self, template, values):
+		SpoutRateQuantitative.__init__(self, "", values)
+
+
+class SpoutRateQuantitativeGT( SpoutRateQuantitative ):
+
+	def __init__(self, template, values):
+		SpoutRateQuantitative.__init__(self, "", values)
+
+
+
 class SimpleTCWrapper():
 
 	@staticmethod
 	def transform(formula):
-		if ( (type(formula) is SigmaCountEQ) or
-			  (type(formula) is SigmaCountGT) or
-			  (type(formula) is SigmaCountLT) or
-			  (type(formula) is SigmaAverageEQ) or
-			  (type(formula) is SigmaAverageGT) or
-			  (type(formula) is SigmaAverageLT) ):
-			return SigmaQuantitative("", formula.getValues())
-		elif( (type(formula) is SpoutRateCountEQ) or
-			   (type(formula) is SpoutRateCountGT) or
-			   (type(formula) is SpoutRateCountLT) or
-			   (type(formula) is SpoutRateAverageEQ) or
-			   (type(formula) is SpoutRateAverageGT) or
-			   (type(formula) is SpoutRateAverageLT) ):
-			return SpoutRateQuantitative("", formula.getValues())
+		if ( (type(formula) is SigmaCountEQ) or (type(formula) is SigmaAverageEQ) ): return SigmaQuantitativeEQ("", formula.getValues())
+		elif ( (type(formula) is SigmaCountGT) or (type(formula) is SigmaAverageGT) ): return SigmaQuantitativeGT("", formula.getValues()) 
+		elif ( (type(formula) is SigmaCountLT) or (type(formula) is SigmaAverageLT) ): return SigmaQuantitativeLT("", formula.getValues())
+			
+		if ( (type(formula) is SpoutRateCountEQ) or (type(formula) is SpoutRateAverageEQ) ): return SpoutRateQuantitativeEQ("", formula.getValues())
+		elif ( (type(formula) is SpoutRateCountGT) or (type(formula) is SpoutRateAverageGT) ): return SpoutRateQuantitativeGT("", formula.getValues()) 
+		elif ( (type(formula) is SpoutRateCountLT) or (type(formula) is SpoutRateAverageLT) ): return SpoutRateQuantitativeLT("", formula.getValues())
+
 
 
 
