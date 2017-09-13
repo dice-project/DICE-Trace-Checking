@@ -446,22 +446,10 @@ class LocalConnector( LocalDMonConnector ):
 
 
 
-class RemoteDmonConnector( AbstractDMonConnector ):
+class RemoteDmonConnector( LocalDMonConnector ):
 	
 	def __init__(self, path):
-		AbstractDMonConnector.__init__(self, path)
-		self.__ok = True
-
-
-	def checkDMonOn(self):
-		return self.__ok
-
-
-	def restGet(self, jsonscript):
-		pass
-	def restPost():
-		pass
-
+		LocalDMonConnector.__init__(self, path)
 
 
 
@@ -494,7 +482,7 @@ def dicetractor(dmon, tc_descriptor):
 			connector = LocalDMonConnector('http://127.0.0.1:5001')
 
 		elif (dmon == 'remote'):
-			connector = RemoteDmonConnector('http://109.231.122.169:5001')
+			connector = RemoteDmonConnector(os.getenv('DMON_URL'))
 
 		else:
 			return -1			
