@@ -5,8 +5,8 @@ import com.google.gson.annotations.SerializedName;
 public enum Relation {
 		@SerializedName("!=")
 		NEQ ("!="),
-		@SerializedName("==")
-		EQ ("=="),
+		@SerializedName("=")
+		EQ ("="),
 		@SerializedName(">")
 		GT (">"),
 		@SerializedName(">=")
