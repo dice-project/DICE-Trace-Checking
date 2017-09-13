@@ -139,13 +139,13 @@ public class TCStormMainLaunchConfigurationTab extends AbstractLaunchConfigurati
 				for (BoltClass b : topology.getBolts()) {
 					// populate list of bolts
 					boltsFormulae.add(new TopologyNodeFormula(b.getName(), NodeType.BOLT, NodeParameter.SIGMA,
-							new Float(0.0), new Float(0.0), new Float(0.0), Method.COUNTING, Relation.LTE,
+							new Float(0.0), new Float(0.0), new Float(0.0), Method.COUNTING, Relation.LT,
 							new Float(b.getSigma())));
 				}
 				for (SpoutClass s : topology.getSpouts()) {
 					// populate list of spouts
 					spoutsFormulae.add(new TopologyNodeFormula(s.getName(), NodeType.SPOUT, NodeParameter.AVG_EMIT_RATE,
-							new Float(0.0), new Float(0.0), new Float(0.0), Method.COUNTING, Relation.LTE,
+							new Float(0.0), new Float(0.0), new Float(0.0), Method.COUNTING, Relation.LT,
 							new Float(s.getAverageEmitRate())));
 				}
 			}
