@@ -3,18 +3,18 @@ package it.polimi.dice.tracechecking.uml2json.json;
 import com.google.gson.annotations.SerializedName;
 
 public enum Relation {
-		@SerializedName("!=")
-		NEQ ("!="),
+/*		@SerializedName("!=")
+		NEQ ("!="),*/
 		@SerializedName("=")
 		EQ ("="),
 		@SerializedName(">")
 		GT (">"),
-		@SerializedName(">=")
+/*		@SerializedName(">=")
 		GTE (">="),
-		@SerializedName("<")
+*/		@SerializedName("<")
 		LT ("<"),
-		@SerializedName("<=")
-		LTE ("<=");
+/*		@SerializedName("<=")
+		LTE ("<=")*/;
 
 	private final String stringRep;
 	
