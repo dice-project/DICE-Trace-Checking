@@ -519,10 +519,11 @@ class SimpleTCWrapper():
 		elif ( (type(formula) is SigmaCountGT) or (type(formula) is SigmaAverageGT) ): return SigmaQuantitativeGT("", formula.getValues()) 
 		elif ( (type(formula) is SigmaCountLT) or (type(formula) is SigmaAverageLT) ): return SigmaQuantitativeLT("", formula.getValues())
 			
-		if ( (type(formula) is SpoutRateCountEQ) or (type(formula) is SpoutRateAverageEQ) ): return SpoutRateQuantitativeEQ("", formula.getValues())
+		elif ( (type(formula) is SpoutRateCountEQ) or (type(formula) is SpoutRateAverageEQ) ): return SpoutRateQuantitativeEQ("", formula.getValues())
 		elif ( (type(formula) is SpoutRateCountGT) or (type(formula) is SpoutRateAverageGT) ): return SpoutRateQuantitativeGT("", formula.getValues()) 
 		elif ( (type(formula) is SpoutRateCountLT) or (type(formula) is SpoutRateAverageLT) ): return SpoutRateQuantitativeLT("", formula.getValues())
 
+		else: return None
 
 
 

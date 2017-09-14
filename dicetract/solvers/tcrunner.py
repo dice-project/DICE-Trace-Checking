@@ -103,7 +103,6 @@ class TCRunner():
 					if (node['relation'] == '='):
 						#define the formula
 						formula = SpoutRateCountEQ(self.template_file_spoutrate_counting, values)
-						logging.debug('Just outside SpoutRateCountEQ')
 					elif (node['relation'] == '<'):
 						#define the formula
 						formula = SpoutRateCountLT(template_file_spoutrate_counting, values)
@@ -121,16 +120,20 @@ class TCRunner():
 	
 			self.__i = self.__i + 1
 
+			logging.debug("Created formula %s", formula)
+			
 	
 			# Wrapping formula object into a SigmaQuantitative or SpoutRateQuantitative
 			# This is for bypassing Spark TC until bugs are fixed
 			formula = SimpleTCWrapper.transform(formula)
+			logging.debug("Created a wrapper formula %s", formula)
 
+			logging.debug("Ready to create a RunnableTCInstance...")
 			# return a RunnableTCInstance specifying the node and the formula
 			if (flag):
 				return self.sparkTC.getRunnableTCInstance(node['name'], formula)
 			else:
-				raise Exception("No runnable TC instance created.")
+				raise Exception("No runnable TC instance created. An error occurred when the formula to be analyzed was being created.")
 		else:
 			raise StopIteration()
 

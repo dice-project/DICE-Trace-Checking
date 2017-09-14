@@ -7,7 +7,7 @@
 			"parameter": "sigma",
 			"timewindow": 3600,
 			"method": "counting",
-			"relation": "=",
+			"relation": "<",
 			"designvalue": 0.8
 		},
 		{

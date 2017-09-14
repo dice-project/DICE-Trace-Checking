@@ -40,6 +40,7 @@ class TCSolver():
 	def getRunnableTCInstance(self, node, formula):
 		if (self.canProcess(formula)):
 			self.setTCInstance(node, formula)
+			logging.debug("Formula %s can be processes by %s", formula, self)
 			return self
 		else:
 			return self.successor.getRunnableTCInstance(node, formula)
@@ -160,6 +161,7 @@ class SimpleTCSolver( TCSolver ):
 			return None
 
 		# define the outcome  
+		logging.debug("Started creation of the json to be sent to the caller")
 		r_json["property"].update({"name": self.__nodename})
 
 		if (isinstance(self.__formula, SigmaQuantitative)):
@@ -178,8 +180,10 @@ class SimpleTCSolver( TCSolver ):
 			r_json["property"].update({"relation": ">"})
 
 		elif ( (type(self.__formula) is SigmaQuantitativeLT) or (type(self.__formula) is SpoutRateQuantitativeLT) ):
-			r_json["result"] = (r<self.__formula.getValues()[2])
+			r_json["result"] = (r<self.__formula.getValues()[1])
 			r_json["property"].update({"relation": "<"})
+
+		logging.debug("The result formatted in json is ready to be sent")
 
 		return r_json
 

@@ -18,6 +18,8 @@ class SimpleTC():
 
 	def run(self, nodename, formula):
 
+		logging.debug("SimpleTC is launched on %s with formula %s", nodename, formula)
+
 		# Time window
 		K = int(formula.getValues()[0])
 
@@ -82,6 +84,7 @@ class SimpleTC():
 			else:
 				raise Exception("Simple Trace Checker was called with an unknown parameter")
 
+		logging.debug("SimpleTC has finished his job...")
 
 
 
