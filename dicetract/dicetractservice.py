@@ -16,11 +16,11 @@ app = Flask(__name__)
 def runDicetract():
 	result = None
 
-	if (request.args.get('ip') in ['nodmon', 'local', 'remote']):
-		result = dicetractor(request.args.get('ip'), request.get_json())
-	else:
-		result = -1
-
+#	if (request.args.get('ip') in ['nodmon', 'local', 'remote']):
+	result = dicetractor(request.args.get('ip'), request.args.get('port'), request.get_json())
+#	else:
+#		result = -1
+	print result
 	#return a string version of the list containing results
 	if (result == -1):
 		response = jsonify("Error")
