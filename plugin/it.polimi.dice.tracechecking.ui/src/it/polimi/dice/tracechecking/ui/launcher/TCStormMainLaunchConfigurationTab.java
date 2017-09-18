@@ -109,7 +109,8 @@ public class TCStormMainLaunchConfigurationTab extends AbstractLaunchConfigurati
 		}
 
 		protected void setInputFile(String inputFile) {
-//			DiceLogger.logInfo(TraceCheckingUI.getDefault(), "setInputFile(" + inputFile + ")");
+			// DiceLogger.logInfo(TraceCheckingUI.getDefault(), "setInputFile("
+			// + inputFile + ")");
 			boolean forceReset = inputFile != this.inputFile;
 			this.inputFile = inputFile;
 			String readableInputFile = toReadableString(inputFile);
@@ -341,7 +342,8 @@ public class TCStormMainLaunchConfigurationTab extends AbstractLaunchConfigurati
 			verifyButton.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					String statusURL = "http://" + data.getMonitoringHostAddress() + ":"
+					String statusURL = "http://" + data.getMonitoringHostAddress()
+							.replaceFirst("^(http(?>s)://www\\.|http(?>s)://|www\\.|http(?s)://)", "") + ":"
 							+ data.getMonitoringPortNumber() + "/dmon/v1/overlord/storm/logs/active";
 					try {
 						URL url = new URL(statusURL);
@@ -550,7 +552,7 @@ public class TCStormMainLaunchConfigurationTab extends AbstractLaunchConfigurati
 
 	@Override
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-//		DiceLogger.logInfo(TraceCheckingUI.getDefault(), "setDefaults()");
+		// DiceLogger.logInfo(TraceCheckingUI.getDefault(), "setDefaults()");
 		configuration.removeAttribute(TraceCheckingLaunchConfigurationAttributes.INPUT_FILE);
 		configuration.removeAttribute(TraceCheckingLaunchConfigurationAttributes.BOLTS_FORMULAE);
 		configuration.removeAttribute(TraceCheckingLaunchConfigurationAttributes.SPOUTS_FORMULAE);
@@ -570,7 +572,7 @@ public class TCStormMainLaunchConfigurationTab extends AbstractLaunchConfigurati
 
 	@Override
 	public void initializeFrom(ILaunchConfiguration configuration) {
-//		DiceLogger.logInfo(TraceCheckingUI.getDefault(), "initializeFrom()");
+		// DiceLogger.logInfo(TraceCheckingUI.getDefault(), "initializeFrom()");
 		try {
 			if (configuration.hasAttribute(TraceCheckingLaunchConfigurationAttributes.INPUT_FILE)) {
 				data.setInputFile(configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.INPUT_FILE,
@@ -629,7 +631,8 @@ public class TCStormMainLaunchConfigurationTab extends AbstractLaunchConfigurati
 
 	@Override
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-//		DiceLogger.logInfo(TraceCheckingUI.getDefault(), "performApply(" + data.getInputFile() + ")");
+		// DiceLogger.logInfo(TraceCheckingUI.getDefault(), "performApply(" +
+		// data.getInputFile() + ")");
 		configuration.setAttribute(TraceCheckingLaunchConfigurationAttributes.INPUT_FILE, data.getInputFile());
 		configuration.setAttribute(TraceCheckingLaunchConfigurationAttributes.BOLTS_FORMULAE,
 				TraceCheckingToolSerializer.serialize(data.getBoltsFormulae()));

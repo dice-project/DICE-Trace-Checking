@@ -219,7 +219,7 @@ class LocalDMonConnector( AbstractDMonConnector ):
 		return rexpjson
 
 
-	def getlogFolder(self):
+	def getLogFolder(self):
 		return self.logFolder
 
 
@@ -250,15 +250,15 @@ class LocalDMonConnector( AbstractDMonConnector ):
 			output_tar = None
 			# After downloading from Dmon, untar the workerlogs file
 			# remove the original tar and untar the included file which contains logs
-			output_tar = check_output(['tar', '-xvf', os.path.join(self.getlogFolder(),workerlogToCheck), '--directory', self.getlogFolder()])
+			output_tar = check_output(['tar', '-xvf', os.path.join(self.getLogFolder(),workerlogToCheck), '--directory', self.getLogFolder()])
 
 			if (output_tar is None or output_tar == ''):
 				raise RuntimeError("tar file from DMON is empty")
 
-			#os.remove(os.path.join(self.getlogFolder(), workerlogToCheck))
-			#os.rename(os.path.join(self.getlogFolder(), output_tar.strip('\n')), os.path.join(self.getlogFolder(), workerlogToCheck))
+			#os.remove(os.path.join(self.getLogFolder(), workerlogToCheck))
+			#os.rename(os.path.join(self.getLogFolder(), output_tar.strip('\n')), os.path.join(self.getLogFolder(), workerlogToCheck))
 
-			output_tar = check_output(['tar', '-xvf', os.path.join(self.getlogFolder(),workerlogToCheck), '--directory', self.getlogFolder()])
+			output_tar = check_output(['tar', '-xvf', os.path.join(self.getLogFolder(),workerlogToCheck), '--directory', self.getLogFolder()])
 
 			#print output_tar
 			if (len(output_tar)>0):
@@ -339,7 +339,7 @@ class LocalDMonConnector( AbstractDMonConnector ):
 		l = []
 		for e in self.logfiles:
 			if (withdir == True):
-				l.append(self.getlogFolder() + '/' + e)
+				l.append(self.getLogFolder() + '/' + e)
 			else:
 				l.append(e)
 		return l
@@ -456,7 +456,7 @@ class RemoteDmonConnector( LocalDMonConnector ):
 
 
 
-def dicetractor(dmon, tc_descriptor):
+def dicetractor(dmon_ip, dmon_port, tc_descriptor):
 
 	#build the rest json query from the TC descriptor by means of the converters (that allow for intepreting the TC descriptor)
 	dmon_query = DMonQuery(SimpleDMonQuery(tc_descriptor))
@@ -475,17 +475,17 @@ def dicetractor(dmon, tc_descriptor):
 	logdescriptor = None
 
 	try:
-		if (dmon == 'nodmon'):
+		if (dmon_ip == 'nodmon'):
 			connector = LocalConnector('')
 
-		elif (dmon == 'local'):
+		elif (dmon_ip == 'local'):
 			connector = LocalDMonConnector('http://127.0.0.1:5001')
 
-		elif (dmon == 'remote'):
-			connector = RemoteDmonConnector(os.getenv('DMON_URL'))
+		elif (dmon_ip == 'remote'):
+			connector = RemoteDmonConnector(dmon_ip)
 
 		else:
-			return -1			
+			connector = LocalDMonConnector(dmon_ip+':'+dmon_port)
 	
 		logsdescriptor = connector.restGet(rest_jsonquery, rexp_file)
 	except Exception, err_msg:

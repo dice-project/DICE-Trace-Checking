@@ -30,12 +30,13 @@ public class TraceCheckingLaunchConfigurationDelegate extends LaunchConfiguratio
 		String tcServerPort = configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.TC_PORT_NUMBER,
 				TraceCheckingLaunchConfigurationAttributes.DEFAULT_TC_PORT_NUMBER);
 
-		String monitoringServerAddress = configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.MONITORING_HOST_ADDRESS,
+		String monitoringServerAddress = configuration.getAttribute(
+				TraceCheckingLaunchConfigurationAttributes.MONITORING_HOST_ADDRESS,
 				TraceCheckingLaunchConfigurationAttributes.DEFAULT_MONITORING_HOST_ADDRESS);
-		String monitoringServerPort = configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.MONITORING_PORT_NUMBER,
+		String monitoringServerPort = configuration.getAttribute(
+				TraceCheckingLaunchConfigurationAttributes.MONITORING_PORT_NUMBER,
 				TraceCheckingLaunchConfigurationAttributes.DEFAULT_MONITORING_PORT_NUMBER);
 
-		
 		List<TopologyNodeFormula> nodeFormulae = new ArrayList<>();
 		// get the serialized boltsFormulae parameter
 		String s_boltFormulae = configuration.getAttribute(TraceCheckingLaunchConfigurationAttributes.BOLTS_FORMULAE,
@@ -71,7 +72,9 @@ public class TraceCheckingLaunchConfigurationDelegate extends LaunchConfiguratio
 
 		TraceCheckingRequest tcRequest = new TraceCheckingRequest("TOPOLOGY", nodeFormulae);
 
-		String launchTCUrl = tcServerAddress + ":" + tcServerPort + "/run?ip=" + monitoringServerAddress +"&port=" + monitoringServerPort;	
+		String launchTCUrl = "http://"
+				+ tcServerAddress.replaceFirst("^(http(?>s)://www\\.|http(?>s)://|www\\.|http(?s)://)", "") + ":"
+				+ tcServerPort + "/run?ip=" + monitoringServerAddress + "&port=" + monitoringServerPort;
 
 		ExclusionStrategy exclusionStrategy = new ExclusionStrategy() {
 			public boolean shouldSkipField(FieldAttributes fieldAttributes) {
@@ -90,34 +93,26 @@ public class TraceCheckingLaunchConfigurationDelegate extends LaunchConfiguratio
 
 		HttpClient nc = new HttpClient();
 		boolean connectionSuccessful;
-		System.out.println("Creating request:\n" + gsonBuilder.toJson(tcRequest));
+		System.out.println("Posting request:\n" + gsonBuilder.toJson(tcRequest) +"\n to:\n" + launchTCUrl);
 		connectionSuccessful = nc.postJSONRequest(launchTCUrl, gsonBuilder.toJson(tcRequest));
-		
-		
-		
-		/*if (connectionSuccessful) {
-			try {
-				Display.getDefault().asyncExec(new Runnable() {
-				    @Override
-				    public void run() {
-							try {
-								IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-								IViewPart view = page.showView("it.polimi.dice.tracechecking.views.view1");
-								
-								
-							} catch (PartInitException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}						
-					}
-				});
 
-				Thread.sleep(5000);
-			} catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
-		}*/
+		/*
+		 * if (connectionSuccessful) { try { Display.getDefault().asyncExec(new
+		 * Runnable() {
+		 * 
+		 * @Override public void run() { try { IWorkbenchPage page =
+		 * PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		 * IViewPart view =
+		 * page.showView("it.polimi.dice.tracechecking.views.view1");
+		 * 
+		 * 
+		 * } catch (PartInitException e) { // TODO Auto-generated catch block
+		 * e.printStackTrace(); } } });
+		 * 
+		 * Thread.sleep(5000); } catch (InterruptedException ex) {
+		 * Thread.currentThread().interrupt(); } }
+		 */
 
 	}
-	
+
 }
