@@ -9,15 +9,9 @@ ENV USER root
 WORKDIR /tmp
 # Update the repos and install all the used packages
 RUN apt-get update && apt-get install -y --force-yes --no-install-recommends \
-#    unzip \
-#    xorg \
-#    gcc \
-#    g++ \
-#    make \
     curl \
     git \
     python \
-#    python-pip \
     python-dev \
     build-essential \
     && \
@@ -27,7 +21,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends \
 
 #installing pip
     WORKDIR /tmp
-    RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
+    RUN curl -k -O https://bootstrap.pypa.io/get-pip.py && \
         python get-pip.py && \ 
         rm get-pip.py
 
@@ -40,16 +34,10 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends \
 # load code from current directory
     ADD . $PROJECT_FOLDER
 
-# Install and setup virtualenv 
-    RUN pip install virtualenv
-    WORKDIR $PROJECT_FOLDER
-    RUN virtualenv -p /usr/bin/python2.7 venv
-    RUN ["/bin/bash", "-c", "source venv/bin/activate"]
 #load all needed packages from pip
     RUN pip install -r ${PROJECT_FOLDER}requirements.txt
 
-
     WORKDIR $SERVER_CODE_FOLDER
 
-    CMD ["python dicetractservice.py"]
+    CMD ["python", "dicetractservice.py"]
 
