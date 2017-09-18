@@ -342,8 +342,9 @@ public class TCStormMainLaunchConfigurationTab extends AbstractLaunchConfigurati
 			verifyButton.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					String statusURL = data.getMonitoringHostAddress() + ":" + data.getMonitoringPortNumber()
-							+ "/dmon/v1/overlord/storm/logs/active";
+					String statusURL = "http://" + data.getMonitoringHostAddress()
+							.replaceFirst("^(http(?>s)://www\\.|http(?>s)://|www\\.|http(?s)://)", "") + ":"
+							+ data.getMonitoringPortNumber() + "/dmon/v1/overlord/storm/logs/active";
 					try {
 						URL url = new URL(statusURL);
 						HttpURLConnection conn = (HttpURLConnection) url.openConnection();
