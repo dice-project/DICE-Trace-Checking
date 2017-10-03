@@ -49,13 +49,13 @@ class TCRunner():
 
 					if (node['relation'] == '='):
 						#define the formula
-						formula = SigmaAverageEQ(template_file_sigma_average, values)
+						formula = SigmaAverageEQ(self.template_file_sigma_average, values)
 					elif (node['relation'] == '<'):
 						#define the formula
-						formula = SigmaAverageLT(template_file_sigma_average, values)
+						formula = SigmaAverageLT(self.template_file_sigma_average, values)
 					elif (node['relation'] == '>'):
 						#define the formula
-						formula = SigmaAverageGT(template_file_sigma_average, values)
+						formula = SigmaAverageGT(self.template_file_sigma_average, values)
 					else: 
 						raise Exception("No runnable TC instance created. Possible cause: parameter name is not correct and properly defined")
 				elif (node['method'] == 'counting'):			
