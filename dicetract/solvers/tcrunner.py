@@ -105,10 +105,10 @@ class TCRunner():
 						formula = SpoutRateCountEQ(self.template_file_spoutrate_counting, values)
 					elif (node['relation'] == '<'):
 						#define the formula
-						formula = SpoutRateCountLT(template_file_spoutrate_counting, values)
+						formula = SpoutRateCountLT(self.template_file_spoutrate_counting, values)
 					elif (node['relation'] == '>'):
 						#define the formula
-						formula = SpoutRateCountGT(template_file_spoutrate_counting, values)
+						formula = SpoutRateCountGT(self.template_file_spoutrate_counting, values)
 					else: 
 						raise Exception("No runnable TC instance created. Possible cause: parameter name is not correct and properly defined")
 				else:

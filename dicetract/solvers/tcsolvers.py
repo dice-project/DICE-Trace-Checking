@@ -165,9 +165,9 @@ class SimpleTCSolver( TCSolver ):
 		r_json["property"].update({"name": self.__nodename})
 
 		if (isinstance(self.__formula, SigmaQuantitative)):
-			 r_json["property"].update({"parameter": "sigma", "timewindow": self.__formula.getValues()[0], "designvalue": self.__formula.getValues()[1]})
+			 r_json["property"].update({"parameter": "sigma", "method": "counting", "timewindow": self.__formula.getValues()[0], "designvalue": self.__formula.getValues()[1]})
 		elif (isinstance(self.__formula, SpoutRateQuantitative)):
-			r_json["property"].update({"parameter": "avg_emit_rate", "timewindow": self.__formula.getValues()[0], "designvalue": self.__formula.getValues()[2]})
+			r_json["property"].update({"parameter": "avg_emit_rate", "method": "counting", "timewindow": self.__formula.getValues()[0], "designvalue": self.__formula.getValues()[2]})
 
  		r_json["metric_value"] = r
 
