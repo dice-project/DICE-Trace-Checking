@@ -9,7 +9,7 @@ from formulaHandler.formula import SigmaCountEQ, SigmaCountLT, SigmaCountGT, Sig
 
 class TCRunner():
 		
-	template_file_sigma_averge = './templates/sigma_average.tmp'
+	template_file_sigma_average = './templates/sigma_average.tmp'
 	template_file_sigma_counting = './templates/sigma_counting.tmp'	
 	template_file_spoutrate_average = './templates/spoutrate_average.tmp'
 	template_file_spoutrate_counting = './templates/spoutrate_counting.tmp'		
