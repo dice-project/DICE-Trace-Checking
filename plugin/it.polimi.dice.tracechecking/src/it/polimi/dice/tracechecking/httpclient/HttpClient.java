@@ -4,9 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
@@ -21,16 +24,17 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 
 import it.polimi.dice.tracechecking.TraceCheckingPlugin;
 import it.polimi.dice.tracechecking.core.logger.DiceLogger;
 import it.polimi.dice.tracechecking.core.ui.dialogs.DialogUtils;
+import it.polimi.dice.tracechecking.uml2json.json.StormTCOutcome;
 
 public class HttpClient {
 
 	private URL serverEndpoint;
 	private URL taskLocation;
-	// private VerificationTask taskStatus;
 
 	public HttpClient() {
 
@@ -52,15 +56,8 @@ public class HttpClient {
 		this.taskLocation = taskLocation;
 	}
 
-	/*
-	 * public VerificationTask getTaskStatus() { return taskStatus; }
-	 */
-	/*
-	 * public void setTaskStatus(VerificationTask taskStatus) { this.taskStatus
-	 * = taskStatus; }
-	 */
 	public boolean postJSONRequest(String urlString, String request) {
-
+		boolean success = false;
 		try {
 
 			URL url = new URL(urlString);
@@ -73,36 +70,41 @@ public class HttpClient {
 			OutputStream os = conn.getOutputStream();
 			os.write(request.getBytes());
 			os.flush();
-			if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED
-					&& conn.getResponseCode() != HttpURLConnection.HTTP_ACCEPTED
-					&& conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
-				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+			if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+				DialogUtils.getWarningDialog(null, "Connection Error - HTTP response code: "+conn.getResponseCode(), conn.getResponseMessage());
+			}else{
+
+				BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+				String outputLine;
+				String responseString = "";
+				System.out.println("Output from Server .... \n");
+				while ((outputLine = br.readLine()) != null) {
+					responseString += outputLine;
+					System.out.println(outputLine);
+				}
+				
+
+				Gson gson = new GsonBuilder().setPrettyPrinting().create();
+				JsonParser jp = new JsonParser();
+				JsonElement je = jp.parse(responseString);
+				Type listType = new TypeToken<ArrayList<StormTCOutcome>>(){}.getType();
+				List<StormTCOutcome> responseList = gson.fromJson(je, listType);
+				String dialogString = "";
+				int i = 1;
+				for (StormTCOutcome tcOutcome : responseList) {
+					dialogString += "Property " + i + ":\n" + 
+							"\t"+tcOutcome.getProperty().getMethod()+"("+tcOutcome.getProperty().getParameter()+")" + "[0,"+tcOutcome.getProperty().getTimeWindow()+"] " +  
+							tcOutcome.getProperty().getRelation().getStringRep() + " "+tcOutcome.getProperty().getDesignValue() +
+							"\n" +
+							"\tResult: " + tcOutcome.isResult() + " (Metric value: "+tcOutcome.getMetricValue()+")\n\n";
+					i++;
+				}
+				
+				DialogUtils.getWarningDialog(null, "TraceCheckingOutput", dialogString);
+				success = true;
 			}
 
-			// CHECK TC-SERVICE
-			// String location = conn.getHeaderField("location");
-			// System.out.println("Location: \n" + location);
-			// this.setTaskLocation(new URL(location));
-
-			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-
-			String outputLine;
-			String responseString = "";
-			System.out.println("Output from Server .... \n");
-			while ((outputLine = br.readLine()) != null) {
-				responseString += outputLine;
-				System.out.println(outputLine);
-			}
-			
-			//Gson gson = new GsonBuilder().create();
-			// this.setTaskStatus(gson.fromJson(responseString,
-			// VerificationTask.class));
-			Gson gson = new GsonBuilder().setPrettyPrinting().create();
-			JsonParser jp = new JsonParser();
-			JsonElement je = jp.parse(responseString);
-			
-			DialogUtils.getWarningDialog(null, "TraceCheckingOutput", gson.toJson(je));
-			
 			conn.disconnect();
 
 			
@@ -121,7 +123,7 @@ public class HttpClient {
 					dialog.setMessage(
 							e.getMessage() + "!!\n Please verify that the url is reachable (" + urlString + ")");
 
-					// open dialog and await user selection
+					// open dialog and wait user selection
 					dialog.open();
 
 				}
@@ -129,55 +131,10 @@ public class HttpClient {
 
 			return false;
 		}
-		return true;
+		return success;
 
 	}
 
-	public void getTaskStatusUpdatesFromServer() {
-
-		try {
-
-			URL url = this.getTaskLocation();
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestMethod("GET");
-			conn.setRequestProperty("Accept", "application/json");
-
-			if (conn.getResponseCode() != 200) {
-				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
-			}
-
-			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-
-			String outputLine;
-			String responseString = "";
-			System.out.println("Output from Server .... \n");
-			while ((outputLine = br.readLine()) != null) {
-				responseString += outputLine;
-				System.out.println(outputLine);
-			}
-
-			
-			// getting task status from json response
-			//Gson gson = new GsonBuilder().create();
-			// this.setTaskStatus(gson.fromJson(responseString,
-			// VerificationTask.class));
-
-			conn.disconnect();
-
-		} catch (MalformedURLException e) {
-
-			e.printStackTrace();
-
-		} catch (IOException e) {
-
-			e.printStackTrace();
-
-		} catch (NullPointerException e) {
-			e.printStackTrace();
-		}
-		;
-
-	}
 	
 	private static void openUrl(URL url, String browserId) {
 	    IWorkbenchBrowserSupport support = PlatformUI.getWorkbench().getBrowserSupport();
@@ -200,20 +157,4 @@ public class HttpClient {
 			}); 
 	}
 	
-
-	// http://localhost:8080/RESTfulExample/json/product/post
-	public static void main(String[] args) {
-		String myUrl = "http://localhost:5000/longtasks";
-		String jsonRequest = "{\"title\":\"pinellaxJAVA\",\"json_context\":{\"verification_params\": {\"base_quantity\": 10, \"periodic_queues\": [\"expander\"], \"num_steps\": 20, \"max_time\": 20000, \"plugin\": [\"ae2bvzot\", \"ae2sbvzot\"]}, \"version\": \"0.1\", \"app_name\": \"SIMPLIFIED FOCUSED CRAWLER\", \"topology\": {\"bolts\": [{\"d\": 0.0, \"parallelism\": 4, \"min_ttf\": 1000, \"alpha\": 0.5, \"sigma\": 2.0, \"id\": \"WpDeserializer\", \"subs\": [\"wpSpout\"]}, {\"d\": 0.0, \"parallelism\": 8, \"min_ttf\": 1000, \"alpha\": 3.0, \"sigma\": 0.75, \"id\": \"expander\", \"subs\": [\"WpDeserializer\"]}, {\"d\": 0.0, \"parallelism\": 1, \"min_ttf\": 1000, \"alpha\": 1.0, \"sigma\": 1.0, \"id\": \"articleExtraction\", \"subs\": [\"expander\"]}, {\"d\": 0.0, \"parallelism\": 1, \"min_ttf\": 1000, \"alpha\": 1.0, \"sigma\": 1.0, \"id\": \"mediaExtraction\", \"subs\": [\"expander\"]}], \"init_queues\": 4, \"max_reboot_time\": 100, \"max_idle_time\": 1.0, \"min_reboot_time\": 10, \"spouts\": [{\"avg_emit_rate\": 4.0, \"id\": \"wpSpout\"}], \"queue_threshold\": 0}, \"description\": \"\"}}";
-		HttpClient nc = new HttpClient();
-		nc.postJSONRequest(myUrl, jsonRequest);
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException ex) {
-			Thread.currentThread().interrupt();
-		}
-		nc.getTaskStatusUpdatesFromServer();
-
-	}
-
 }

@@ -63,7 +63,6 @@ public class TraceCheckingLaunchConfigurationDelegate extends LaunchConfiguratio
 			for (TopologyNodeFormula tnf : spoutFormulae) {
 				if (tnf.isSelected()) {
 					nodeFormulae.add(tnf);
-					System.out.println("Adding: " + tnf.getName());
 				}
 			}
 		} catch (IOException e) {
@@ -95,7 +94,7 @@ public class TraceCheckingLaunchConfigurationDelegate extends LaunchConfiguratio
 		boolean connectionSuccessful;
 		System.out.println("Posting request:\n" + gsonBuilder.toJson(tcRequest) +"\n to:\n" + launchTCUrl);
 		connectionSuccessful = nc.postJSONRequest(launchTCUrl, gsonBuilder.toJson(tcRequest));
-
+		
 		/*
 		 * if (connectionSuccessful) { try { Display.getDefault().asyncExec(new
 		 * Runnable() {
