@@ -151,11 +151,11 @@ class VisitorClassSigmaSpoutRate( VisitorDMonQuery ):
                 flag_spoutrate = True
 
         if (flag_sigma and flag_spoutrate):
-            return 're_exclamation_spoutrate_sigma_thread.json'
+            return os.getenv('RE_SPOUTRATE_SIGMA', 're_exclamation_spoutrate_sigma_thread.json')
         elif (flag_sigma):
-            return 're_exclamation_sigma_thread.json'
+            return os.getenv('RE_SIGMA', 're_exclamation_sigma_thread.json')
         elif (flag_spoutrate):
-            return 're_exclamation_spoutrate_thread.json'
+            return os.getenv('RE_SPOUTRATE', 're_exclamation_spoutrate_thread.json')
 
 
 
@@ -258,7 +258,8 @@ class LocalDMonConnector( AbstractDMonConnector ):
             #os.remove(os.path.join(self.getLogFolder(), workerlogToCheck))
             #os.rename(os.path.join(self.getLogFolder(), output_tar.strip('\n')), os.path.join(self.getLogFolder(), workerlogToCheck))
 
-            output_tar = check_output(['tar', '-xvf', os.path.join(self.getLogFolder(),workerlogToCheck), '--directory', self.getLogFolder()])
+				# Removed to deal with new tar content defined by last DMON version
+            # output_tar = check_output(['tar', '-xvf', os.path.join(self.getLogFolder(),workerlogToCheck), '--directory', self.getLogFolder()])
 
             #print output_tar
             if (len(output_tar)>0):
@@ -273,14 +274,17 @@ class LocalDMonConnector( AbstractDMonConnector ):
 
                 #set variable logfiles containing the list of log files extracted from the tar file recieved from DMon
                 #self.logfiles = output_tar.split() --- NOT PORTABLE
-                self.logfiles = [os.path.basename(x) for x in glob.glob("./logs/*.log")]
+                ## self.logfiles = [os.path.basename(x) for x in glob.glob("./logs/*.log")]
+
+                self.logfiles = glob.glob(os.path.join(self.getLogFolder(), "logs/workers-artifacts/*/*/worker.log"))
+
                 print "\nTar file contains the following logs:"
                 for e in self.logfiles:
                     print "\t-", e
 
                 for log_file in self.logfiles:
                     try:
-                        with open('./logs/' + log_file, 'r') as f:
+                        with open(log_file, 'r') as f:
                             #extract a line from the current log file
                             line = f.readline().strip('\n')
 
@@ -309,7 +313,7 @@ class LocalDMonConnector( AbstractDMonConnector ):
                                 line = f.readline().strip('\n')
 
                     except IOError, error:
-                        logging.error('IO error')
+                        logging.error('I\'m trying to open worker log file [' + log_file + ']  but I got an IO error')
 
                 try:
                     with open('./topologylog.json', 'w') as f:
@@ -339,7 +343,8 @@ class LocalDMonConnector( AbstractDMonConnector ):
         l = []
         for e in self.logfiles:
             if (withdir == True):
-                l.append(self.getLogFolder() + '/' + e)
+                #l.append(self.getLogFolder() + '/' + e)
+                l.append(e)
             else:
                 l.append(e)
         return l
