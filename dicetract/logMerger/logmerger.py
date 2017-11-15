@@ -29,7 +29,10 @@ class LabeledQueue():
 
 	def put(self, key, element, label):
 		#add tuple (key,element)
-		heapq.heappush(self.__queue, (key,(element,label)))
+		try:
+			heapq.heappush(self.__queue, (key,(element,label)))
+		except str_msg:
+			print "Error while adding element" + str( (key,(element,label)) ) + " in queue :" + self.__queue
 		#update counting
 		self.__labels[label] = self.__labels[label] + 1
 		logging.debug('Queue put: ' + 'key=' + key + ' value=' + str( (element,label) ))
@@ -128,7 +131,8 @@ class Merger():
 
          #open all the log files (workers)
 			logFiles = {}
-			[logFiles.update({f.split('/')[-1]: open(f, 'r')}) for f in worker_files]
+			#[logFiles.update({f.split('/')[-1]: open(f, 'r')}) for f in worker_files]
+			[logFiles.update({f: open(f, 'r')}) for f in worker_files]
 			logging.info('Log files opened')
 			logging.debug(logFiles)
 
@@ -136,8 +140,8 @@ class Merger():
 				#for all the collected logs until all get eof 
 				for f in worker_files:
 					#remove from f the folder and get the file name
-					filename = f.split('/')[-1]
-					folder = f[0:f.find(filename)]
+					filename = f #.split('/')[-1]
+					#folder = f[0:f.find(filename)]
 					#read a line
 					line = logFiles[filename].readline().strip('\n')
 					logging.debug('Raw line from file ' + f + ': ' + line)
@@ -176,7 +180,7 @@ class Merger():
 							if (self.__queues.has_key(nodeName)): 
 								self.__queues[nodeName].put(key,value,filename)
 								logging.debug('Pushed ' + key + ', ' + value + ' into ' + nodeName)
-						
+
 							#add the event in the dictionary of events
 							if (self.__events.has_key(nodeName)): 
 								if (value not in self.__events[nodeName]):
